@@ -5,14 +5,18 @@ use Laravel\Sanctum\Sanctum;
 use Spatie\Permission\Models\Role;
 
 beforeEach(function () {
+    // ایجاد نقش‌ها در صورت وجود نداشتن
+    Role::firstOrCreate(['name' => 'admin']);
+    Role::firstOrCreate(['name' => 'vendor']);
+
     $this->admin = User::factory()->create();
     $this->admin->assignRole('admin');
     Sanctum::actingAs($this->admin);
 
     // ایجاد فروشندگان
-    $vendorRole = Role::firstOrCreate(['name' => 'vendor']);
     User::factory()->count(5)->create()->each(fn ($user) => $user->assignRole('vendor'));
 });
+
 
 test('admin can get list of vendors', function () {
     $response = $this->getJson('/api/admin/vendors?per_page=5');

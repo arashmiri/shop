@@ -2,8 +2,11 @@
 
 use App\Models\User;
 use Laravel\Sanctum\Sanctum;
+use Spatie\Permission\Models\Role;
 
 beforeEach(function () {
+    // ایجاد نقش‌ها در صورت وجود نداشتن
+    Role::firstOrCreate(['name' => 'admin']);
     $this->admin = User::factory()->create();
     $this->admin->assignRole('admin');
     Sanctum::actingAs($this->admin);
@@ -11,6 +14,7 @@ beforeEach(function () {
     // ایجاد کاربران معمولی
     User::factory()->count(15)->create();
 });
+
 
 test('admin can get list of users', function () {
     $this->withoutExceptionHandling();

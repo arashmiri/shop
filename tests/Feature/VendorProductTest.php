@@ -3,21 +3,30 @@
 use App\Models\Product;
 use App\Models\User;
 use Laravel\Sanctum\Sanctum;
+use Spatie\Permission\Models\Role;
 
 beforeEach(function () {
+    // ایجاد نقش‌ها در صورت وجود نداشتن
+    Role::firstOrCreate(['name' => 'vendor']);
+
     // ایجاد یک کاربر و تبدیل آن به فروشنده
     $this->vendor = User::factory()->create();
-    $this->vendor->assignRole('vendor'); // نقش فروشنده را تنظیم کنید
+    $this->vendor->assignRole('vendor');
+
+    // ایجاد کاربر مدیر (برای admin_created_by)
+    $this->admin = User::factory()->create();
 
     // ایجاد فروشگاه برای این کاربر
     $this->vendor->vendor()->create([
         'name' => 'Test Vendor',
         'user_id' => $this->vendor->id,
-        'admin_created_by' => 1, // اطمینان حاصل کنید که به درستی به یک مدیر مرتبط باشد
+        'admin_created_by' => $this->admin->id, // استفاده از شناسه مدیر
     ]);
 
     Sanctum::actingAs($this->vendor); // احراز هویت فروشنده
 });
+
+
 
 
 
