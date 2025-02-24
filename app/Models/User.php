@@ -58,8 +58,9 @@ class User extends Authenticatable
         return 'phone'; // شماره موبایل به عنوان شناسه ورود
     }
 
-    public function vendors()
+    public function vendor()
     {
-        return $this->hasMany(Vendor::class, 'admin_created_by');
+        return $this->hasOne(Vendor::class, 'user_id');
     }
+
 }

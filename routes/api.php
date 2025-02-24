@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Admin\VendorController;
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\vendor\ProductController;
 
 Route::prefix('auth')->group(function () {
     Route::post('/send-otp', [AuthController::class, 'sendOtp']);
@@ -21,8 +22,13 @@ Route::middleware(['auth:sanctum', 'role:admin'])->group(function () {
 
 
 
-
 Route::middleware(['auth:sanctum', 'role:admin'])->group(function () {
     Route::post('/admin/upgrade-to-vendor', [VendorController::class, 'upgradeToVendor']);
 });
+
+Route::middleware(['auth:sanctum', 'role:vendor'])->group(function () {
+    Route::post('/vendor/products', [ProductController::class, 'store']); // ایجاد محصول
+    Route::get('/vendor/products', [ProductController::class, 'index']); // لیست محصولات
+});
+
 
