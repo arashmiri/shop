@@ -39,5 +39,5 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/products/{productId}/reviews', [ReviewController::class, 'show']); // دریافت نظرات محصول
 });
 
-
+Route::get('/products', [ProductController::class, 'index']);
 

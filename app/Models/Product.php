@@ -17,6 +17,8 @@ class Product extends Model
         'stock',
     ];
 
+    protected $with = ['vendor'];
+
     /**
      * ارتباط با مدل Vendor
      */
@@ -24,6 +26,7 @@ class Product extends Model
     {
         return $this->belongsTo(Vendor::class);
     }
+
 
     public function reviews()
     {
