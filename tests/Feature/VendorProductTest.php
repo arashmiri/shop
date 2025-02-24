@@ -44,3 +44,29 @@ test('a vendor can see their products', function () {
         ->assertJsonCount(3, 'data');
 });
 
+test('a vendor can update a product', function () {
+    $product = Product::factory()->create(['vendor_id' => $this->vendor->vendor->id]);
+
+    $response = $this->putJson("/api/vendor/products/{$product->id}", [
+        'name' => 'Updated Product',
+        'description' => 'Updated description',
+        'price' => 1500,
+        'stock' => 20,
+    ]);
+
+    $response->assertStatus(200)
+        ->assertJsonPath('product.name', 'Updated Product')
+        ->assertJsonPath('product.price', 1500)
+        ->assertJsonPath('product.stock', 20);
+});
+
+test('a vendor can delete a product', function () {
+    $product = Product::factory()->create(['vendor_id' => $this->vendor->vendor->id]);
+
+    $response = $this->deleteJson("/api/vendor/products/{$product->id}");
+
+    $response->assertStatus(200)
+        ->assertJson(['message' => 'محصول با موفقیت حذف شد']);
+});
+
+
