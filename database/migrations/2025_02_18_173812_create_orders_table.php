@@ -7,22 +7,31 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration
 {
     /**
-     * Run the migrations.
+     * اجرای migration.
      */
     public function up(): void
     {
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('user_id');
+            $table->unsignedBigInteger('vendor_id');
             $table->decimal('total_price', 10, 2);
             $table->enum('status', ['pending', 'paid', 'shipped', 'completed', 'cancelled'])->default('pending');
             $table->timestamps();
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+
+            // تعریف کلیدهای خارجی
+            $table->foreign('user_id')
+                ->references('id')->on('users')
+                ->onDelete('cascade');
+
+            $table->foreign('vendor_id')
+                ->references('id')->on('vendors')
+                ->onDelete('cascade');
         });
     }
 
     /**
-     * Reverse the migrations.
+     * برگرداندن تغییرات migration.
      */
     public function down(): void
     {

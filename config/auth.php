@@ -85,7 +85,6 @@ return [
             'driver' => 'eloquent',
             'model' => env('AUTH_MODEL', App\Models\User::class),
             'table' => 'users',
-            'identifier' => 'phone', // استفاده از شماره موبایل به جای ایمیل
         ],
 
         // 'users' => [

@@ -24,23 +24,9 @@ class UserFactory extends Factory
     public function definition(): array
     {
         return [
-            'phone' => '09' . fake()->numerify('########'), // شماره موبایل تصادفی ایرانی
-            'name' => fake()->name(),
-            'email' => fake()->unique()->safeEmail(),
-            'password' => bcrypt('password'), // مقدار پیش‌فرض برای تست، در عمل استفاده نمی‌شود چون OTP داریم
+            'phone' => $this->faker->unique()->numerify('09#########'),
+            'name' => $this->faker->name(),
             'remember_token' => Str::random(10),
-            'created_at' => now(),
-            'updated_at' => now(),
         ];
-    }
-
-    /**
-     * Indicate that the model's email address should be unverified.
-     */
-    public function unverified(): static
-    {
-        return $this->state(fn (array $attributes) => [
-            'email_verified_at' => null,
-        ]);
     }
 }
