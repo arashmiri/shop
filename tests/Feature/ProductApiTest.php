@@ -12,6 +12,10 @@ beforeEach(function () {
     // ایجاد نقش 'vendor' در صورت عدم وجود
     Role::firstOrCreate(['name' => 'vendor']);
 
+    // ایجاد یک کاربر ادمین و ذخیره ID آن
+    $admin = User::factory()->create();
+    $this->adminId = $admin->id;
+
     // ایجاد یک کاربر و تبدیل آن به فروشنده
     $this->vendor = User::factory()->create();
     $this->vendor->assignRole('vendor');
@@ -20,22 +24,19 @@ beforeEach(function () {
     $this->vendor->vendor()->create([
         'name' => 'Test Vendor',
         'user_id' => $this->vendor->id,
-        'admin_created_by' => 1, // مطمئن شوید کاربر با شناسه 1 وجود دارد (در تست، RefreshDatabase آن را ایجاد می‌کند)
+        'admin_created_by' => $this->adminId, // استفاده از id ادمین واقعی
     ]);
 
-    // ریفرش کردن مدل کاربر تا رابطه‌ی vendor به‌روز شود
     $this->vendor->refresh();
-
     Sanctum::actingAs($this->vendor);
 
-    // ایجاد به صورت صریح ۳ محصول برای این فروشنده
     $this->products = Product::factory()->count(3)->create([
         'vendor_id' => $this->vendor->vendor->id,
     ]);
 
-    // انتخاب اولین محصول برای تست محصول تکی
     $this->product = $this->products->first();
 });
+
 
 it('shows products with vendors', function () {
     $this->withoutExceptionHandling();

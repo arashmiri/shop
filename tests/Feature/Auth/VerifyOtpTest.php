@@ -1,89 +1,88 @@
 <?php
 
 use App\Models\OtpCode;
+use App\Models\User;
+use App\Services\JwtService;
+use App\ValueObjects\PhoneNumber;
+use App\ValueObjects\OtpCode as OtpCodeObject;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Session;
 
 uses(RefreshDatabase::class);
 
-it('can verify OTP successfully', function () {
-    $phone = '09384409950';
+it('verifies OTP successfully and returns auth token', function () {
+    $this->withoutExceptionHandling();
+
+    $phone = new PhoneNumber('09123456789');
     $otp = '1234';
 
-    // ایجاد OTP در دیتابیس
-    OtpCode::create([
-        'phone' => $phone,
-        'code' => $otp,
-        'expires_at' => now()->addMinutes(5), // معتبر
-    ]);
+    // ارسال OTP و دریافت توکن از پاسخ API
+    $sendOtpResponse = $this->postJson('/api/auth/send-otp', ['phone' => $phone->getPhone()]);
+    $sendOtpResponse->assertStatus(200);
 
-    Session::put('phone', $phone);
+    $token = $sendOtpResponse->json('token');
 
-    // بررسی اینکه OTP قبل از ارسال درخواست در دیتابیس موجود است
-    $this->assertDatabaseHas('otp_codes', ['phone' => $phone, 'code' => $otp]);
+    // بروزرسانی کد OTP در دیتابیس
+    OtpCode::where('phone', $phone->getPhone())
+        ->update(['code' => $otp, 'expires_at' => now()->addMinutes(5)]);
 
-    // ارسال درخواست برای تأیید OTP
+    // ارسال درخواست تأیید OTP
     $response = $this->postJson('/api/auth/verify-otp', [
+        'token' => $token,
         'code' => $otp
     ]);
 
-    // بررسی اینکه توکن برگردانده شده است
-    $response->assertStatus(200)
-        ->assertJsonStructure(['token']);
-
-    // بررسی اینکه OTP از دیتابیس حذف شده است
-    $this->assertDatabaseMissing('otp_codes', ['phone' => $phone, 'code' => $otp]);
+    // بررسی موفقیت تأیید و دریافت توکن احراز هویت
+    $response->assertStatus(200)->assertJsonStructure(['token']);
 });
 
+it('fails when OTP is incorrect', function () {
+    $phone = new PhoneNumber('09123456789');
+    $otp = '1234';
 
-it('fails when OTP is expired', function () {
-    $phone = '09384409950';
+    // ایجاد OTP در دیتابیس
+    OtpCode::create(['phone' => $phone->getPhone(), 'code' => $otp, 'expires_at' => now()->addMinutes(5)]);
 
-    // ایجاد یک OTP منقضی شده
-    OtpCode::create([
-        'phone' => $phone,
-        'code' => '1234',
-        'expires_at' => now()->subMinute(), // منقضی شده
-    ]);
+    // ایجاد توکن JWT
+    $jwtService = app(JwtService::class);
+    $token = $jwtService->generateToken($phone->getPhone());
 
-    Session::put('phone', $phone);
-
-    // ارسال درخواست برای تأیید OTP
+    // ارسال OTP اشتباه
     $response = $this->postJson('/api/auth/verify-otp', [
-        'code' => '1234'
-    ]);
-
-    $response->assertStatus(422)
-        ->assertJson(['message' => 'کد تأیید منقضی شده است.']);
-});
-
-it('fails when OTP is invalid', function () {
-    $phone = '09384409950';
-
-    // ایجاد یک OTP معتبر اما کد اشتباه در درخواست
-    OtpCode::create([
-        'phone' => $phone,
-        'code' => '5678', // کد درست این است ولی ما کد اشتباه ارسال می‌کنیم
-        'expires_at' => now()->addMinutes(5),
-    ]);
-
-    Session::put('phone', $phone);
-
-    // ارسال درخواست برای تأیید OTP با کد اشتباه
-    $response = $this->postJson('/api/auth/verify-otp', [
-        'code' => '1234' // کد اشتباه
+        'token' => $token,
+        'code' => '0000' // کد نادرست
     ]);
 
     $response->assertStatus(422)
         ->assertJson(['message' => 'کد تأیید نامعتبر است.']);
 });
 
-it('fails when phone number is missing from session', function () {
-    // بدون قرار دادن شماره موبایل در سشن
+it('fails when OTP is expired', function () {
+    $phone = new PhoneNumber('09123456789');
+    $otp = '1234';
+
+    // ایجاد OTP منقضی شده در دیتابیس
+    OtpCode::create(['phone' => $phone->getPhone(), 'code' => $otp, 'expires_at' => now()->subMinutes(1)]);
+
+    // ایجاد توکن JWT
+    $jwtService = app(JwtService::class);
+    $token = $jwtService->generateToken($phone->getPhone());
+
+    // ارسال درخواست تأیید
     $response = $this->postJson('/api/auth/verify-otp', [
-        'code' => '1234'
+        'token' => $token,
+        'code' => $otp
     ]);
 
     $response->assertStatus(422)
-        ->assertJson(['message' => 'فرمت شماره موبایل یا کد تأیید نامعتبر است.']);
+        ->assertJson(['message' => 'کد تأیید منقضی شده است.']);
+});
+
+it('fails when token is invalid', function () {
+    $response = $this->postJson('/api/auth/verify-otp', [
+        'token' => 'invalid-token',
+        'code' => '1234'
+    ]);
+
+    $response->assertStatus(401)
+        ->assertJson(['message' => 'توکن نامعتبر یا منقضی شده است.']);
 });

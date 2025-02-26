@@ -4,21 +4,20 @@ namespace App\Services;
 
 use App\Exceptions\OtpExpiredException;
 use App\Exceptions\OtpInvalidException;
+use App\Exceptions\OtpRequestTooSoonException;
 use App\Exceptions\OtpSendingFailedException;
 use App\Models\OtpCode as OtpCodeModel;
-use Illuminate\Support\Facades\Session;
-use App\Exceptions\OtpRequestTooSoonException;
 
 class OtpService
 {
-    protected $smsProvider;
+    protected SmsProviderInterface $smsProvider;
 
     public function __construct(SmsProviderInterface $smsProvider)
     {
         $this->smsProvider = $smsProvider;
     }
 
-    public function sendOtp(string $phone): void
+    public function sendOtp(string $phone)
     {
         $existingOtp = OtpCodeModel::where('phone', $phone)->first();
 
@@ -29,14 +28,9 @@ class OtpService
         $otp = rand(1000, 9999);
 
         OtpCodeModel::updateOrCreate(
-            ['phone' => $phone], // شرط برای یافتن رکورد
-            [
-                'code' => $otp, // اطمینان از تغییر مقدار
-                'expires_at' => now()->addMinutes(5)
-            ]
+            ['phone' => $phone],
+            ['code' => $otp, 'expires_at' => now()->addMinutes(5)]
         );
-
-        Session::put('phone', $phone);
 
         if (!$this->smsProvider->sendOtp($phone, $otp)) {
             throw new OtpSendingFailedException();
@@ -47,6 +41,7 @@ class OtpService
 
     public function verifyOtp(string $phone, string $otp): void
     {
+
         $otpRecord = OtpCodeModel::where('phone', $phone)
             ->where('code', $otp)
             ->first();
@@ -61,5 +56,4 @@ class OtpService
 
         $otpRecord->delete();
     }
-
 }

@@ -2,13 +2,11 @@
 
 use App\Models\OtpCode;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use App\Exceptions\OtpExpiredException;
-use App\Exceptions\OtpInvalidException;
-
+use App\Services\JwtService;
 
 uses(RefreshDatabase::class);
 
-it('can send OTP successfully', function () {
+it('can send OTP successfully and receive JWT', function () {
     $this->withoutExceptionHandling();
 
     $phone = '09384409950';
@@ -18,13 +16,15 @@ it('can send OTP successfully', function () {
 
     // بررسی موفقیت ارسال
     $response->assertStatus(200)
-        ->assertJson(['message' => 'کد تأیید ارسال شد.']);
+        ->assertJsonStructure(['message', 'token']);
 
     // بررسی اینکه OTP در دیتابیس ذخیره شده است
     $this->assertDatabaseHas('otp_codes', ['phone' => $phone]);
 
-    // بررسی اینکه شماره موبایل در سشن ذخیره شده است
-    expect(Session::get('phone'))->toBe($phone);
+    // بررسی اعتبار JWT
+    $jwtService = new JwtService();
+    $decodedPhone = $jwtService->validateToken($response['token']);
+    expect($decodedPhone)->toBe($phone);
 });
 
 it('fails when sending OTP with invalid phone', function () {
@@ -59,7 +59,7 @@ it('prevents sending OTP again within 2 minutes', function () {
     // ارسال اولیه OTP
     $this->postJson('/api/auth/send-otp', ['phone' => $phone])
         ->assertStatus(200)
-        ->assertJson(['message' => 'کد تأیید ارسال شد.']);
+        ->assertJsonStructure(['message', 'token']);
 
     // تلاش برای ارسال مجدد قبل از ۲ دقیقه
     $this->postJson('/api/auth/send-otp', ['phone' => $phone])
@@ -83,5 +83,5 @@ it('allows sending OTP after 2 minutes', function () {
     // تلاش برای ارسال مجدد بعد از ۲ دقیقه
     $this->postJson('/api/auth/send-otp', ['phone' => $phone])
         ->assertStatus(200)
-        ->assertJson(['message' => 'کد تأیید ارسال شد.']);
+        ->assertJsonStructure(['message', 'token']);
 });
