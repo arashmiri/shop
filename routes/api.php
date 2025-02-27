@@ -14,13 +14,10 @@ Route::prefix('auth')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
 });
 
-
 Route::middleware(['auth:sanctum', 'role:admin'])->group(function () {
     Route::get('/admin/users', [UserController::class, 'index']);
     Route::get('/admin/vendors', [VendorController::class, 'index']);
 });
-
-
 
 Route::middleware(['auth:sanctum', 'role:admin'])->group(function () {
     Route::post('/admin/upgrade-to-vendor', [VendorController::class, 'upgradeToVendor']);

@@ -25,11 +25,22 @@
             "bearerAuth": []
         }
     ],
+    "tags": [
+        {
+            "name": "Authentication",
+            "description": "Endpoints related to user authentication"
+        },
+        {
+            "name": "Admin",
+            "description": "Endpoints for admin operations (requires admin role)"
+        }
+    ],
     "paths": {
         "/auth/send-otp": {
             "post": {
                 "summary": "Send OTP",
                 "description": "Sends a one-time password to the user's phone number.",
+                "tags": ["Authentication"],
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -37,7 +48,7 @@
                             "schema": {
                                 "type": "object",
                                 "properties": {
-                                    "phone": { "type": "string" }
+                                    "phone": { "type": "string" , "example": "09384409950" }
                                 },
                                 "required": ["phone"]
                             }
@@ -61,6 +72,7 @@
             "post": {
                 "summary": "Verify OTP",
                 "description": "Verifies the OTP and authenticates the user.",
+                "tags": ["Authentication"],
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -69,7 +81,9 @@
                                 "type": "object",
                                 "properties": {
                                     "token": { "type": "string" },
-                                    "code": { "type": "string" }
+                                    "code": { "type": "string" ,
+                                        "example": "1234"
+                                    }
                                 },
                                 "required": ["token", "code"]
                             }
@@ -93,10 +107,71 @@
             "post": {
                 "summary": "Logout",
                 "description": "Logs out the authenticated user.",
+                "tags": ["Authentication"],
                 "security": [{ "bearerAuth": [] }],
                 "responses": {
                     "200": {
                         "description": "Logout successful"
+                    }
+                }
+            }
+        },
+        "/admin/users": {
+            "get": {
+                "summary": "Get Users",
+                "description": "Retrieves a list of normal users. Requires admin role.",
+                "tags": ["Admin"],
+                "security": [{ "bearerAuth": [] }],
+                "parameters": [
+                    {
+                        "name": "phone",
+                        "in": "query",
+                        "description": "Filter users by phone number",
+                        "schema": { "type": "string" }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "description": "Number of results per page",
+                        "schema": { "type": "integer", "default": 10 }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of users"
+                    },
+                    "403": {
+                        "description": "Forbidden - Requires admin role"
+                    }
+                }
+            }
+        },
+        "/admin/vendors": {
+            "get": {
+                "summary": "Get Vendors",
+                "description": "Retrieves a list of vendors. Requires admin role.",
+                "tags": ["Admin"],
+                "security": [{ "bearerAuth": [] }],
+                "parameters": [
+                    {
+                        "name": "phone",
+                        "in": "query",
+                        "description": "Filter vendors by phone number",
+                        "schema": { "type": "string" }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "description": "Number of results per page",
+                        "schema": { "type": "integer", "default": 10 }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of vendors"
+                    },
+                    "403": {
+                        "description": "Forbidden - Requires admin role"
                     }
                 }
             }
