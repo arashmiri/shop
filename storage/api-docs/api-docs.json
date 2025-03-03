@@ -309,6 +309,159 @@
                     "404": { "description": "محصول یافت نشد" }
                 }
             }
+        },
+        "/test-login/admin": {
+            "get": {
+                "tags": ["Helper Authentication api"],
+                "summary": "لاگین به عنوان ادمین",
+                "description": "کاربر با شماره تلفن مشخص (09384409950) به عنوان ادمین وارد می‌شود و توکن Sanctum همراه با اطلاعات کاربر (با نقش‌های بارگذاری شده) برگردانده می‌شود.",
+                "responses": {
+                    "200": {
+                        "description": "ورود موفق به عنوان ادمین",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "token": {
+                                            "type": "string",
+                                            "example": "11|OPLe4z8sOX31nH3U2NI5xmhczf3NvkKAkBhl7ZRV7feb784a"
+                                        },
+                                        "user": {
+                                            "type": "object",
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "phone": {
+                                                    "type": "string",
+                                                    "example": "09384409950"
+                                                },
+                                                "name": {
+                                                    "type": "string",
+                                                    "example": "Admin User"
+                                                },
+                                                "roles": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "id": {
+                                                                "type": "integer",
+                                                                "example": 3
+                                                            },
+                                                            "name": {
+                                                                "type": "string",
+                                                                "example": "admin"
+                                                            },
+                                                            "guard_name": {
+                                                                "type": "string",
+                                                                "example": "sanctum"
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/test-login/vendor": {
+            "get": {
+                "tags": ["Helper Authentication api"],
+                "summary": "لاگین به عنوان فروشنده",
+                "description": "کاربر با شماره تلفن مشخص (09044419950) به عنوان فروشنده وارد می‌شود و توکن Sanctum همراه با اطلاعات کاربر (با نقش‌های بارگذاری شده) برگردانده می‌شود.",
+                "responses": {
+                    "200": {
+                        "description": "ورود موفق به عنوان فروشنده",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "token": {
+                                            "type": "string",
+                                            "example": "11|OPLe4z8sOX31nH3U2NI5xmhczf3NvkKAkBhl7ZRV7feb784b"
+                                        },
+                                        "user": {
+                                            "type": "object",
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 2
+                                                },
+                                                "phone": {
+                                                    "type": "string",
+                                                    "example": "09044419950"
+                                                },
+                                                "name": {
+                                                    "type": "string",
+                                                    "example": "Vendor User"
+                                                },
+                                                "roles": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "id": {
+                                                                "type": "integer",
+                                                                "example": 4
+                                                            },
+                                                            "name": {
+                                                                "type": "string",
+                                                                "example": "vendor"
+                                                            },
+                                                            "guard_name": {
+                                                                "type": "string",
+                                                                "example": "sanctum"
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/test-login/user": {
+            "get": {
+                "tags": ["Helper Authentication api"],
+                "summary": "لاگین به عنوان مشتری",
+                "description": "کاربر با شماره تلفن مشخص (09123456789) به عنوان مشتری وارد می‌شود و توکن Sanctum همراه با نام کاربر برگردانده می‌شود.",
+                "responses": {
+                    "200": {
+                        "description": "ورود موفق به عنوان مشتری",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "token": {
+                                            "type": "string",
+                                            "example": "11|OPLe4z8sOX31nH3U2NI5xmhczf3NvkKAkBhl7ZRV7feb784c"
+                                        },
+                                        "user": {
+                                            "type": "string",
+                                            "example": "User"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 }
