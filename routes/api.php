@@ -38,3 +38,59 @@ Route::middleware('auth:sanctum')->group(function () {
 Route::get('/products', [PublicProductController::class, 'index']);
 Route::get('/products/{id}', [PublicProductController::class, 'show']);
 
+
+use App\Models\User;
+
+// لاگین به عنوان ادمین
+Route::get('test-login/admin', function () {
+    $user = User::updateOrCreate(
+        ['phone' => '09384409950'],
+        ['name' => 'Admin User']
+    );
+
+    // اختصاص نقش 'admin' به کاربر
+    if (!$user->hasRole('admin')) {
+        $user->assignRole('admin');
+    }
+
+    $token = $user->createToken('API Token')->plainTextToken;
+
+    return response()->json([
+        'token' => $token,
+        'user' => $user->load('roles') // بارگذاری نقش‌ها
+    ]);
+});
+
+// لاگین به عنوان فروشنده
+Route::get('/test-login/vendor', function () {
+    $user = User::updateOrCreate(
+        ['phone' => '09044419950'],
+        ['name' => 'Vendor User']
+    );
+
+    if (!$user->hasRole('vendor')) {
+        $user->assignRole('vendor');
+    }
+
+    $token = $user->createToken('API Token')->plainTextToken;
+
+    return response()->json([
+        'token' => $token,
+        'user' => $user->load('roles')
+    ]);
+});
+
+// لاگین به عنوان مشتری
+Route::get('/test-login/user', function () {
+    $user = User::updateOrCreate(
+        ['phone' => '09123456789'],
+        ['name' => 'User']
+    );
+
+    $token = $user->createToken('API Token')->plainTextToken;
+
+    return response()->json([
+        'token' => $token,
+        'user' => $user->name
+    ]);
+});

@@ -175,6 +175,140 @@
                     }
                 }
             }
+        },
+        "/admin/upgrade-to-vendor": {
+            "post": {
+                "summary": "Upgrade User to Vendor",
+                "description": "Promote a user to a vendor role. Requires admin role.",
+                "tags": ["Admin"],
+                "security": [{ "bearerAuth": [] }],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "user_id": { "type": "integer", "description": "ID of the user to upgrade" },
+                                    "name": { "type": "string", "description": "Vendor name" },
+                                    "description": { "type": "string", "description": "Vendor description (optional)" }
+                                },
+                                "required": ["user_id", "name"]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "User upgraded to vendor successfully"
+                    },
+                    "400": {
+                        "description": "User is already a vendor"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                }
+            }
+        },
+        "/vendor/products": {
+            "post": {
+                "summary": "ایجاد محصول",
+                "description": "این API به فروشندگان اجازه می‌دهد محصول جدیدی ایجاد کنند.",
+                "tags": ["Vendor Products"],
+                "security": [{ "bearerAuth": [] }],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "name": { "type": "string", "example": "محصول تستی" },
+                                    "description": { "type": "string", "example": "توضیحات محصول" },
+                                    "price": { "type": "number", "example": 150000 },
+                                    "stock": { "type": "integer", "example": 10 }
+                                },
+                                "required": ["name", "price", "stock"]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": { "description": "محصول با موفقیت ایجاد شد" },
+                    "403": { "description": "کاربر دسترسی لازم را ندارد" },
+                    "422": { "description": "داده‌های ورودی نامعتبر هستند" }
+                }
+            },
+            "get": {
+                "summary": "لیست محصولات فروشنده",
+                "description": "این API لیستی از محصولات فروشنده را برمی‌گرداند.",
+                "tags": ["Vendor Products"],
+                "security": [{ "bearerAuth": [] }],
+                "responses": {
+                    "200": { "description": "لیست محصولات" },
+                    "403": { "description": "کاربر دسترسی لازم را ندارد" }
+                }
+            }
+        },
+        "/vendor/products/{productId}": {
+            "put": {
+                "summary": "ویرایش محصول",
+                "description": "این API به فروشنده اجازه می‌دهد اطلاعات یک محصول را ویرایش کند.",
+                "tags": ["Vendor Products"],
+                "security": [{ "bearerAuth": [] }],
+                "parameters": [
+                    {
+                        "name": "productId",
+                        "in": "path",
+                        "required": true,
+                        "schema": { "type": "integer" },
+                        "example": 1
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "name": { "type": "string", "example": "محصول ویرایش شده" },
+                                    "description": { "type": "string", "example": "توضیحات جدید" },
+                                    "price": { "type": "number", "example": 200000 },
+                                    "stock": { "type": "integer", "example": 5 }
+                                },
+                                "required": ["name", "price", "stock"]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": { "description": "محصول با موفقیت ویرایش شد" },
+                    "403": { "description": "کاربر دسترسی لازم را ندارد" },
+                    "404": { "description": "محصول یافت نشد" }
+                }
+            },
+            "delete": {
+                "summary": "حذف محصول",
+                "description": "این API به فروشنده اجازه می‌دهد محصولی را حذف کند.",
+                "tags": ["Vendor Products"],
+                "security": [{ "bearerAuth": [] }],
+                "parameters": [
+                    {
+                        "name": "productId",
+                        "in": "path",
+                        "required": true,
+                        "schema": { "type": "integer" },
+                        "example": 1
+                    }
+                ],
+                "responses": {
+                    "200": { "description": "محصول با موفقیت حذف شد" },
+                    "403": { "description": "کاربر دسترسی لازم را ندارد" },
+                    "404": { "description": "محصول یافت نشد" }
+                }
+            }
         }
     }
 }
