@@ -43,7 +43,7 @@ use App\Models\User;
 
 // لاگین به عنوان ادمین
 Route::get('test-login/admin', function () {
-    $user = User::updateOrCreate(
+    $user = User::firstOrCreate(
         ['phone' => '09384409950'],
         ['name' => 'Admin User']
     );
@@ -63,7 +63,7 @@ Route::get('test-login/admin', function () {
 
 // لاگین به عنوان فروشنده
 Route::get('/test-login/vendor', function () {
-    $user = User::updateOrCreate(
+    $user = User::firstOrCreate(
         ['phone' => '09044419950'],
         ['name' => 'Vendor User']
     );
@@ -71,6 +71,24 @@ Route::get('/test-login/vendor', function () {
     if (!$user->hasRole('vendor')) {
         $user->assignRole('vendor');
     }
+
+    $admin = User::firstOrCreate(
+        ['phone' => '09384409950'],
+        ['name' => 'Admin User']
+    );
+
+    // اختصاص نقش 'admin' به کاربر
+    if (!$admin->hasRole('admin')) {
+        $admin->assignRole('admin');
+    }
+
+    $vendor = \App\Models\Vendor::firstOrCreate([
+        'user_id' => $user->id,
+        'name' => "store name",
+        'description' => "store description",
+        'balance' => 0.00,
+        'admin_created_by' => $admin->id, // مقدار صحیح: ID کاربر لاگین شده
+    ]);
 
     $token = $user->createToken('API Token')->plainTextToken;
 
@@ -82,7 +100,7 @@ Route::get('/test-login/vendor', function () {
 
 // لاگین به عنوان مشتری
 Route::get('/test-login/user', function () {
-    $user = User::updateOrCreate(
+    $user = User::firstOrCreate(
         ['phone' => '09123456789'],
         ['name' => 'User']
     );
