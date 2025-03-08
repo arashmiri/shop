@@ -77,15 +77,18 @@ test('authenticated user can view checkout information', function () {
     
     $response->assertStatus(200)
         ->assertJsonStructure([
+            'status',
             'data' => [
-                'cart',
-                'total',
+                'cart_id',
                 'items_by_vendor',
+                'subtotal',
+                'discount_amount',
+                'total'
             ]
         ]);
     
     // Total should be 800 (2 * 100 + 3 * 200)
-    expect($response->json('data.total'))->toBe(800);
+    $this->assertEquals(800, (float)$response->json('data.total'));
 });
 
 test('user with empty cart cannot checkout', function () {
@@ -97,7 +100,8 @@ test('user with empty cart cannot checkout', function () {
     
     $response->assertStatus(400)
         ->assertJson([
-            'message' => 'سبد خرید شما خالی است'
+            'status' => 'error',
+            'message' => 'سبد خرید شما خالی است.'
         ]);
 });
 
@@ -110,10 +114,12 @@ test('authenticated user can process checkout', function () {
     
     $response->assertStatus(201)
         ->assertJsonStructure([
+            'status',
             'message',
             'data' => [
-                'order',
-                'items_by_vendor',
+                'order_id',
+                'total_price',
+                'status'
             ]
         ]);
     
@@ -150,8 +156,17 @@ test('checkout fails if product is out of stock', function () {
         ->postJson('/api/checkout');
     
     $response->assertStatus(400)
-        ->assertJsonFragment([
-            'message' => 'Not enough stock for product: Test Product 1'
+        ->assertJsonPath('status', 'error')
+        ->assertJsonPath('message', 'برخی از محصولات سبد خرید شما موجودی کافی ندارند.')
+        ->assertJsonStructure([
+            'out_of_stock_items' => [
+                '*' => [
+                    'product_id',
+                    'product_name',
+                    'requested_quantity',
+                    'available_stock'
+                ]
+            ]
         ]);
     
     // Check that no order was created

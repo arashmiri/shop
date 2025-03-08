@@ -83,15 +83,32 @@
                         "example": "abc123xyz456",
                         "nullable": true
                     },
+                    "coupon_id": {
+                        "type": "integer",
+                        "example": 1,
+                        "nullable": true
+                    },
                     "items": {
                         "type": "array",
                         "items": {
                             "$ref": "#/components/schemas/CartItem"
                         }
                     },
-                    "total": {
+                    "subtotal": {
                         "type": "number",
                         "example": 750000
+                    },
+                    "discount_amount": {
+                        "type": "number",
+                        "example": 75000
+                    },
+                    "total": {
+                        "type": "number",
+                        "example": 675000
+                    },
+                    "coupon": {
+                        "$ref": "#/components/schemas/Coupon",
+                        "nullable": true
                     },
                     "items_by_vendor": {
                         "type": "object",
@@ -147,9 +164,22 @@
                         "type": "integer",
                         "example": 3
                     },
-                    "total_price": {
+                    "subtotal": {
                         "type": "number",
                         "example": 750000
+                    },
+                    "discount_amount": {
+                        "type": "number",
+                        "example": 75000
+                    },
+                    "total_price": {
+                        "type": "number",
+                        "example": 675000
+                    },
+                    "coupon_id": {
+                        "type": "integer",
+                        "example": 1,
+                        "nullable": true
                     },
                     "status": {
                         "type": "string",
@@ -167,6 +197,10 @@
                         "items": {
                             "$ref": "#/components/schemas/OrderVendorStatus"
                         }
+                    },
+                    "coupon": {
+                        "$ref": "#/components/schemas/Coupon",
+                        "nullable": true
                     },
                     "items_by_vendor": {
                         "type": "object",
@@ -332,6 +366,180 @@
                         "example": "2023-01-01T12:00:00Z"
                     }
                 }
+            },
+            "Discount": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "name": {
+                        "type": "string",
+                        "example": "تخفیف تابستانه"
+                    },
+                    "description": {
+                        "type": "string",
+                        "example": "تخفیف ویژه فصل تابستان",
+                        "nullable": true
+                    },
+                    "type": {
+                        "type": "string",
+                        "enum": ["percentage", "fixed"],
+                        "example": "percentage"
+                    },
+                    "value": {
+                        "type": "number",
+                        "example": 15
+                    },
+                    "min_order_amount": {
+                        "type": "number",
+                        "example": 100000,
+                        "nullable": true
+                    },
+                    "max_discount_amount": {
+                        "type": "number",
+                        "example": 50000,
+                        "nullable": true
+                    },
+                    "vendor_id": {
+                        "type": "integer",
+                        "example": 2,
+                        "nullable": true
+                    },
+                    "product_id": {
+                        "type": "integer",
+                        "example": 1,
+                        "nullable": true
+                    },
+                    "category_id": {
+                        "type": "integer",
+                        "example": 3,
+                        "nullable": true
+                    },
+                    "is_active": {
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "starts_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2023-06-01T00:00:00Z",
+                        "nullable": true
+                    },
+                    "expires_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2023-08-31T23:59:59Z",
+                        "nullable": true
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2023-05-15T10:00:00Z"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2023-05-15T10:00:00Z"
+                    }
+                }
+            },
+            "Coupon": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "code": {
+                        "type": "string",
+                        "example": "SUMMER2023"
+                    },
+                    "name": {
+                        "type": "string",
+                        "example": "کوپن تابستانه"
+                    },
+                    "description": {
+                        "type": "string",
+                        "example": "کوپن ویژه فصل تابستان",
+                        "nullable": true
+                    },
+                    "type": {
+                        "type": "string",
+                        "enum": ["percentage", "fixed"],
+                        "example": "percentage"
+                    },
+                    "value": {
+                        "type": "number",
+                        "example": 20
+                    },
+                    "min_order_amount": {
+                        "type": "number",
+                        "example": 200000,
+                        "nullable": true
+                    },
+                    "max_discount_amount": {
+                        "type": "number",
+                        "example": 100000,
+                        "nullable": true
+                    },
+                    "vendor_id": {
+                        "type": "integer",
+                        "example": 2,
+                        "nullable": true
+                    },
+                    "product_id": {
+                        "type": "integer",
+                        "example": 1,
+                        "nullable": true
+                    },
+                    "category_id": {
+                        "type": "integer",
+                        "example": 3,
+                        "nullable": true
+                    },
+                    "usage_limit": {
+                        "type": "integer",
+                        "example": 100,
+                        "nullable": true
+                    },
+                    "usage_limit_per_user": {
+                        "type": "integer",
+                        "example": 1,
+                        "nullable": true
+                    },
+                    "used_count": {
+                        "type": "integer",
+                        "example": 45
+                    },
+                    "is_active": {
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "starts_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2023-06-01T00:00:00Z",
+                        "nullable": true
+                    },
+                    "expires_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2023-08-31T23:59:59Z",
+                        "nullable": true
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2023-05-15T10:00:00Z"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2023-05-15T10:00:00Z"
+                    }
+                }
             }
         }
     },
@@ -384,6 +592,14 @@
         {
             "name": "Payments",
             "description": "Endpoints for managing payments"
+        },
+        {
+            "name": "Discounts",
+            "description": "Endpoints for managing product discounts"
+        },
+        {
+            "name": "Coupons",
+            "description": "Endpoints for managing and applying coupons"
         }
     ],
     "paths": {
@@ -1408,15 +1624,16 @@
                                 "schema": {
                                     "type": "object",
                                     "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "success"
+                                        },
                                         "data": {
                                             "type": "object",
                                             "properties": {
-                                                "cart": {
-                                                    "$ref": "#/components/schemas/Cart"
-                                                },
-                                                "total": {
-                                                    "type": "number",
-                                                    "example": 750000
+                                                "cart_id": {
+                                                    "type": "integer",
+                                                    "example": 1
                                                 },
                                                 "items_by_vendor": {
                                                     "type": "object",
@@ -1434,6 +1651,22 @@
                                                             }
                                                         }
                                                     }
+                                                },
+                                                "subtotal": {
+                                                    "type": "number",
+                                                    "example": 750000
+                                                },
+                                                "discount_amount": {
+                                                    "type": "number",
+                                                    "example": 75000
+                                                },
+                                                "total": {
+                                                    "type": "number",
+                                                    "example": 675000
+                                                },
+                                                "coupon": {
+                                                    "$ref": "#/components/schemas/Coupon",
+                                                    "nullable": true
                                                 }
                                             }
                                         }
@@ -1449,6 +1682,10 @@
                                 "schema": {
                                     "type": "object",
                                     "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "error"
+                                        },
                                         "message": {
                                             "type": "string",
                                             "example": "سبد خرید شما خالی است"
@@ -1480,36 +1717,28 @@
                                 "schema": {
                                     "type": "object",
                                     "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "success"
+                                        },
                                         "message": {
                                             "type": "string",
-                                            "example": "سفارش شما با موفقیت ثبت شد"
+                                            "example": "سفارش شما با موفقیت ثبت شد."
                                         },
                                         "data": {
                                             "type": "object",
                                             "properties": {
-                                                "order": {
-                                                    "$ref": "#/components/schemas/Order"
+                                                "order_id": {
+                                                    "type": "integer",
+                                                    "example": 1
                                                 },
-                                                "items_by_vendor": {
-                                                    "type": "object",
-                                                    "additionalProperties": {
-                                                        "type": "object",
-                                                        "properties": {
-                                                            "vendor": {
-                                                                "$ref": "#/components/schemas/Product/properties/vendor"
-                                                            },
-                                                            "items": {
-                                                                "type": "array",
-                                                                "items": {
-                                                                    "$ref": "#/components/schemas/OrderItem"
-                                                                }
-                                                            },
-                                                            "status": {
-                                                                "type": "string",
-                                                                "example": "pending"
-                                                            }
-                                                        }
-                                                    }
+                                                "total_price": {
+                                                    "type": "number",
+                                                    "example": 675000
+                                                },
+                                                "status": {
+                                                    "type": "string",
+                                                    "example": "pending"
                                                 }
                                             }
                                         }
@@ -1525,6 +1754,10 @@
                                 "schema": {
                                     "type": "object",
                                     "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "error"
+                                        },
                                         "message": {
                                             "type": "string",
                                             "example": "سبد خرید شما خالی است"
@@ -2610,6 +2843,958 @@
                     },
                     "404": {
                         "description": "پرداخت یافت نشد"
+                    }
+                }
+            }
+        },
+        "/discounts": {
+            "get": {
+                "summary": "لیست تخفیف‌های فعال",
+                "description": "دریافت لیست تمامی تخفیف‌های فعال در فروشگاه",
+                "tags": ["Discounts"],
+                "responses": {
+                    "200": {
+                        "description": "لیست تخفیف‌های فعال",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "success"
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/Discount"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/products/{productId}/discounts": {
+            "get": {
+                "summary": "تخفیف‌های مربوط به یک محصول",
+                "description": "دریافت لیست تخفیف‌های فعال برای یک محصول خاص",
+                "tags": ["Discounts"],
+                "parameters": [
+                    {
+                        "name": "productId",
+                        "in": "path",
+                        "required": true,
+                        "description": "شناسه محصول",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "لیست تخفیف‌های مربوط به محصول",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "success"
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/Discount"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "محصول یافت نشد"
+                    }
+                }
+            }
+        },
+        "/vendor/discounts": {
+            "get": {
+                "summary": "لیست تخفیف‌های فروشنده",
+                "description": "دریافت لیست تخفیف‌های ایجاد شده توسط فروشنده",
+                "tags": ["Discounts"],
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "لیست تخفیف‌های فروشنده",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "success"
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/Discount"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "کاربر دسترسی لازم را ندارد"
+                    }
+                }
+            },
+            "post": {
+                "summary": "ایجاد تخفیف جدید",
+                "description": "ایجاد یک تخفیف جدید توسط فروشنده",
+                "tags": ["Discounts"],
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "تخفیف تابستانه"
+                                    },
+                                    "description": {
+                                        "type": "string",
+                                        "example": "تخفیف ویژه فصل تابستان"
+                                    },
+                                    "type": {
+                                        "type": "string",
+                                        "enum": ["percentage", "fixed"],
+                                        "example": "percentage"
+                                    },
+                                    "value": {
+                                        "type": "number",
+                                        "example": 15
+                                    },
+                                    "min_order_amount": {
+                                        "type": "number",
+                                        "example": 100000
+                                    },
+                                    "max_discount_amount": {
+                                        "type": "number",
+                                        "example": 50000
+                                    },
+                                    "product_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "is_active": {
+                                        "type": "boolean",
+                                        "example": true
+                                    },
+                                    "starts_at": {
+                                        "type": "string",
+                                        "format": "date-time",
+                                        "example": "2023-06-01T00:00:00Z"
+                                    },
+                                    "expires_at": {
+                                        "type": "string",
+                                        "format": "date-time",
+                                        "example": "2023-08-31T23:59:59Z"
+                                    }
+                                },
+                                "required": ["name", "type", "value"]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "تخفیف با موفقیت ایجاد شد",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "success"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "تخفیف با موفقیت ایجاد شد."
+                                        },
+                                        "data": {
+                                            "$ref": "#/components/schemas/Discount"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "کاربر دسترسی لازم را ندارد"
+                    },
+                    "422": {
+                        "description": "خطای اعتبارسنجی داده‌ها"
+                    }
+                }
+            }
+        },
+        "/vendor/discounts/{id}": {
+            "get": {
+                "summary": "جزئیات تخفیف",
+                "description": "دریافت جزئیات یک تخفیف خاص",
+                "tags": ["Discounts"],
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "description": "شناسه تخفیف",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "جزئیات تخفیف",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "success"
+                                        },
+                                        "data": {
+                                            "$ref": "#/components/schemas/Discount"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "کاربر دسترسی لازم را ندارد"
+                    },
+                    "404": {
+                        "description": "تخفیف یافت نشد"
+                    }
+                }
+            },
+            "put": {
+                "summary": "ویرایش تخفیف",
+                "description": "ویرایش یک تخفیف موجود",
+                "tags": ["Discounts"],
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "description": "شناسه تخفیف",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "تخفیف تابستانه ویرایش شده"
+                                    },
+                                    "description": {
+                                        "type": "string",
+                                        "example": "تخفیف ویژه فصل تابستان"
+                                    },
+                                    "type": {
+                                        "type": "string",
+                                        "enum": ["percentage", "fixed"],
+                                        "example": "percentage"
+                                    },
+                                    "value": {
+                                        "type": "number",
+                                        "example": 20
+                                    },
+                                    "min_order_amount": {
+                                        "type": "number",
+                                        "example": 150000
+                                    },
+                                    "max_discount_amount": {
+                                        "type": "number",
+                                        "example": 60000
+                                    },
+                                    "product_id": {
+                                        "type": "integer",
+                                        "example": 2
+                                    },
+                                    "is_active": {
+                                        "type": "boolean",
+                                        "example": true
+                                    },
+                                    "starts_at": {
+                                        "type": "string",
+                                        "format": "date-time",
+                                        "example": "2023-06-15T00:00:00Z"
+                                    },
+                                    "expires_at": {
+                                        "type": "string",
+                                        "format": "date-time",
+                                        "example": "2023-09-15T23:59:59Z"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "تخفیف با موفقیت به‌روزرسانی شد",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "success"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "تخفیف با موفقیت به‌روزرسانی شد."
+                                        },
+                                        "data": {
+                                            "$ref": "#/components/schemas/Discount"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "کاربر دسترسی لازم را ندارد"
+                    },
+                    "404": {
+                        "description": "تخفیف یافت نشد"
+                    },
+                    "422": {
+                        "description": "خطای اعتبارسنجی داده‌ها"
+                    }
+                }
+            },
+            "delete": {
+                "summary": "حذف تخفیف",
+                "description": "حذف یک تخفیف موجود",
+                "tags": ["Discounts"],
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "description": "شناسه تخفیف",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "تخفیف با موفقیت حذف شد",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "success"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "تخفیف با موفقیت حذف شد."
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "کاربر دسترسی لازم را ندارد"
+                    },
+                    "404": {
+                        "description": "تخفیف یافت نشد"
+                    }
+                }
+            }
+        },
+        "/vendor/coupons": {
+            "get": {
+                "summary": "لیست کوپن‌های فروشنده",
+                "description": "دریافت لیست کوپن‌های ایجاد شده توسط فروشنده",
+                "tags": ["Coupons"],
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "لیست کوپن‌های فروشنده",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "success"
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/Coupon"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "کاربر دسترسی لازم را ندارد"
+                    }
+                }
+            },
+            "post": {
+                "summary": "ایجاد کوپن جدید",
+                "description": "ایجاد یک کوپن جدید توسط فروشنده",
+                "tags": ["Coupons"],
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "code": {
+                                        "type": "string",
+                                        "example": "SUMMER2023"
+                                    },
+                                    "name": {
+                                        "type": "string",
+                                        "example": "کوپن تابستانه"
+                                    },
+                                    "description": {
+                                        "type": "string",
+                                        "example": "کوپن ویژه فصل تابستان"
+                                    },
+                                    "type": {
+                                        "type": "string",
+                                        "enum": ["percentage", "fixed"],
+                                        "example": "percentage"
+                                    },
+                                    "value": {
+                                        "type": "number",
+                                        "example": 20
+                                    },
+                                    "min_order_amount": {
+                                        "type": "number",
+                                        "example": 200000
+                                    },
+                                    "max_discount_amount": {
+                                        "type": "number",
+                                        "example": 100000
+                                    },
+                                    "product_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "usage_limit": {
+                                        "type": "integer",
+                                        "example": 100
+                                    },
+                                    "usage_limit_per_user": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "is_active": {
+                                        "type": "boolean",
+                                        "example": true
+                                    },
+                                    "starts_at": {
+                                        "type": "string",
+                                        "format": "date-time",
+                                        "example": "2023-06-01T00:00:00Z"
+                                    },
+                                    "expires_at": {
+                                        "type": "string",
+                                        "format": "date-time",
+                                        "example": "2023-08-31T23:59:59Z"
+                                    }
+                                },
+                                "required": ["name", "type", "value"]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "کوپن با موفقیت ایجاد شد",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "success"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "کوپن با موفقیت ایجاد شد."
+                                        },
+                                        "data": {
+                                            "$ref": "#/components/schemas/Coupon"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "کاربر دسترسی لازم را ندارد"
+                    },
+                    "422": {
+                        "description": "خطای اعتبارسنجی داده‌ها"
+                    }
+                }
+            }
+        },
+        "/vendor/coupons/{id}": {
+            "get": {
+                "summary": "جزئیات کوپن",
+                "description": "دریافت جزئیات یک کوپن خاص",
+                "tags": ["Coupons"],
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "description": "شناسه کوپن",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "جزئیات کوپن",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "success"
+                                        },
+                                        "data": {
+                                            "$ref": "#/components/schemas/Coupon"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "کاربر دسترسی لازم را ندارد"
+                    },
+                    "404": {
+                        "description": "کوپن یافت نشد"
+                    }
+                }
+            },
+            "put": {
+                "summary": "ویرایش کوپن",
+                "description": "ویرایش یک کوپن موجود",
+                "tags": ["Coupons"],
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "description": "شناسه کوپن",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "code": {
+                                        "type": "string",
+                                        "example": "SUMMER2023EDIT"
+                                    },
+                                    "name": {
+                                        "type": "string",
+                                        "example": "کوپن تابستانه ویرایش شده"
+                                    },
+                                    "description": {
+                                        "type": "string",
+                                        "example": "کوپن ویژه فصل تابستان"
+                                    },
+                                    "type": {
+                                        "type": "string",
+                                        "enum": ["percentage", "fixed"],
+                                        "example": "percentage"
+                                    },
+                                    "value": {
+                                        "type": "number",
+                                        "example": 25
+                                    },
+                                    "min_order_amount": {
+                                        "type": "number",
+                                        "example": 250000
+                                    },
+                                    "max_discount_amount": {
+                                        "type": "number",
+                                        "example": 120000
+                                    },
+                                    "product_id": {
+                                        "type": "integer",
+                                        "example": 2
+                                    },
+                                    "usage_limit": {
+                                        "type": "integer",
+                                        "example": 150
+                                    },
+                                    "usage_limit_per_user": {
+                                        "type": "integer",
+                                        "example": 2
+                                    },
+                                    "is_active": {
+                                        "type": "boolean",
+                                        "example": true
+                                    },
+                                    "starts_at": {
+                                        "type": "string",
+                                        "format": "date-time",
+                                        "example": "2023-06-15T00:00:00Z"
+                                    },
+                                    "expires_at": {
+                                        "type": "string",
+                                        "format": "date-time",
+                                        "example": "2023-09-15T23:59:59Z"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "کوپن با موفقیت به‌روزرسانی شد",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "success"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "کوپن با موفقیت به‌روزرسانی شد."
+                                        },
+                                        "data": {
+                                            "$ref": "#/components/schemas/Coupon"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "کاربر دسترسی لازم را ندارد"
+                    },
+                    "404": {
+                        "description": "کوپن یافت نشد"
+                    },
+                    "422": {
+                        "description": "خطای اعتبارسنجی داده‌ها"
+                    }
+                }
+            },
+            "delete": {
+                "summary": "حذف کوپن",
+                "description": "حذف یک کوپن موجود",
+                "tags": ["Coupons"],
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "description": "شناسه کوپن",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "کوپن با موفقیت حذف شد",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "success"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "کوپن با موفقیت حذف شد."
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "کاربر دسترسی لازم را ندارد"
+                    },
+                    "404": {
+                        "description": "کوپن یافت نشد"
+                    }
+                }
+            }
+        },
+        "/coupons/apply": {
+            "post": {
+                "summary": "اعمال کوپن به سبد خرید",
+                "description": "اعمال یک کوپن به سبد خرید کاربر",
+                "tags": ["Coupons"],
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "code": {
+                                        "type": "string",
+                                        "example": "SUMMER2023"
+                                    }
+                                },
+                                "required": ["code"]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "کوپن با موفقیت اعمال شد",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "success"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "کوپن با موفقیت اعمال شد."
+                                        },
+                                        "data": {
+                                            "type": "object",
+                                            "properties": {
+                                                "cart": {
+                                                    "$ref": "#/components/schemas/Cart"
+                                                },
+                                                "discount_amount": {
+                                                    "type": "number",
+                                                    "example": 75000
+                                                },
+                                                "total": {
+                                                    "type": "number",
+                                                    "example": 675000
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "خطا در اعمال کوپن",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "error"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "این کوپن معتبر نیست یا منقضی شده است."
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "نیاز به احراز هویت"
+                    },
+                    "422": {
+                        "description": "خطای اعتبارسنجی داده‌ها"
+                    }
+                }
+            }
+        },
+        "/coupons/remove": {
+            "post": {
+                "summary": "حذف کوپن از سبد خرید",
+                "description": "حذف کوپن اعمال شده از سبد خرید کاربر",
+                "tags": ["Coupons"],
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "کوپن با موفقیت حذف شد",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "success"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "کوپن با موفقیت حذف شد."
+                                        },
+                                        "data": {
+                                            "type": "object",
+                                            "properties": {
+                                                "cart": {
+                                                    "$ref": "#/components/schemas/Cart"
+                                                },
+                                                "total": {
+                                                    "type": "number",
+                                                    "example": 750000
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "خطا در حذف کوپن",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "error"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "هیچ کوپنی روی سبد خرید شما اعمال نشده است."
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "نیاز به احراز هویت"
                     }
                 }
             }

@@ -12,7 +12,15 @@ class Cart extends Model
     protected $fillable = [
         'user_id',
         'session_id',
+        'coupon_id',
     ];
+    
+    /**
+     * The accessors to append to the model's array form.
+     *
+     * @var array
+     */
+    protected $appends = ['total', 'subtotal', 'discount_amount'];
     
     /**
      * Get the user that owns the cart.
@@ -31,13 +39,44 @@ class Cart extends Model
     }
     
     /**
-     * Calculate the total price of all items in the cart.
+     * Get the coupon applied to the cart.
      */
-    public function getTotalAttribute()
+    public function coupon()
+    {
+        return $this->belongsTo(Coupon::class);
+    }
+    
+    /**
+     * Calculate the subtotal price of all items in the cart (before discount).
+     */
+    public function getSubtotalAttribute()
     {
         return $this->items->sum(function ($item) {
             return $item->quantity * $item->product->price;
         });
+    }
+    
+    /**
+     * Calculate the discount amount based on the applied coupon.
+     */
+    public function getDiscountAmountAttribute()
+    {
+        if (!$this->coupon) {
+            return 0;
+        }
+        
+        return $this->coupon->calculateDiscountAmount($this->getSubtotalAttribute());
+    }
+    
+    /**
+     * Calculate the total price of all items in the cart (after discount).
+     */
+    public function getTotalAttribute()
+    {
+        $subtotal = $this->getSubtotalAttribute();
+        $discount = $this->getDiscountAmountAttribute();
+        
+        return max(0, $subtotal - $discount);
     }
     
     /**

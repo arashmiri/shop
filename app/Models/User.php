@@ -91,4 +91,14 @@ class User extends Authenticatable
     {
         return $this->hasMany(Order::class);
     }
+    
+    /**
+     * The coupons that have been used by the user.
+     */
+    public function coupons()
+    {
+        return $this->belongsToMany(Coupon::class)
+            ->withPivot('order_id', 'discount_amount', 'used_at')
+            ->withTimestamps();
+    }
 }

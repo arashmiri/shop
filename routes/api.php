@@ -12,6 +12,9 @@ use App\Http\Controllers\ProductController as PublicProductController;  // بر�
 use App\Http\Controllers\Vendor\ProductController as VendorProductController; // برای کنترلر فروشندگان
 use App\Http\Controllers\Vendor\OrderController as VendorOrderController; // برای کنترلر سفارشات فروشندگان
 use App\Http\Controllers\ReviewController;
+use App\Http\Controllers\Api\DiscountController;
+use App\Http\Controllers\Api\CouponController;
+use App\Http\Controllers\Api\CheckoutController as ApiCheckoutController;
 
 Route::prefix('auth')->group(function () {
     Route::post('/send-otp', [AuthController::class, 'sendOtp']);
@@ -38,6 +41,20 @@ Route::middleware(['auth:sanctum', 'role:vendor'])->group(function () {
     Route::get('/vendor/orders', [VendorOrderController::class, 'index']); // لیست سفارشات فروشنده
     Route::get('/vendor/orders/{id}', [VendorOrderController::class, 'show']); // جزئیات سفارش فروشنده
     Route::put('/vendor/orders/{id}/status', [VendorOrderController::class, 'updateStatus']); // بروزرسانی وضعیت سفارش
+    
+    // Discount routes for vendors
+    Route::get('/vendor/discounts', [DiscountController::class, 'index']); // لیست تخفیف‌های فروشنده
+    Route::post('/vendor/discounts', [DiscountController::class, 'store']); // ایجاد تخفیف جدید
+    Route::get('/vendor/discounts/{id}', [DiscountController::class, 'show']); // جزئیات تخفیف
+    Route::put('/vendor/discounts/{id}', [DiscountController::class, 'update']); // ویرایش تخفیف
+    Route::delete('/vendor/discounts/{id}', [DiscountController::class, 'destroy']); // حذف تخفیف
+    
+    // Coupon routes for vendors
+    Route::get('/vendor/coupons', [CouponController::class, 'index']); // لیست کوپن‌های فروشنده
+    Route::post('/vendor/coupons', [CouponController::class, 'store']); // ایجاد کوپن جدید
+    Route::get('/vendor/coupons/{id}', [CouponController::class, 'show']); // جزئیات کوپن
+    Route::put('/vendor/coupons/{id}', [CouponController::class, 'update']); // ویرایش کوپن
+    Route::delete('/vendor/coupons/{id}', [CouponController::class, 'destroy']); // حذف کوپن
 });
 
 Route::middleware('auth:sanctum')->group(function () {
@@ -50,13 +67,17 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/orders/{id}/cancel', [OrderController::class, 'cancel']); // لغو سفارش
     
     // Checkout routes
-    Route::get('/checkout', [CheckoutController::class, 'index']); // اطلاعات تسویه حساب
-    Route::post('/checkout', [CheckoutController::class, 'process']); // پردازش تسویه حساب
+    Route::get('/checkout', [ApiCheckoutController::class, 'index']); // اطلاعات تسویه حساب
+    Route::post('/checkout', [ApiCheckoutController::class, 'store']); // پردازش تسویه حساب
     
     // Payment routes
     Route::post('/orders/{orderId}/payments', [PaymentController::class, 'create']); // ایجاد پرداخت جدید
     Route::get('/payments', [PaymentController::class, 'history']); // تاریخچه پرداخت‌ها
     Route::get('/payments/{paymentId}', [PaymentController::class, 'show']); // جزئیات پرداخت
+    
+    // Coupon routes for users
+    Route::post('/coupons/apply', [CouponController::class, 'apply']); // اعمال کوپن به سبد خرید
+    Route::post('/coupons/remove', [CouponController::class, 'remove']); // حذف کوپن از سبد خرید
 });
 
 // Payment callback routes (public)
@@ -74,6 +95,9 @@ Route::delete('/cart', [CartController::class, 'clearCart']); // خالی کرد
 Route::get('/products', [PublicProductController::class, 'index']);
 Route::get('/products/{id}', [PublicProductController::class, 'show']);
 
+// Discount routes (public)
+Route::get('/discounts', [DiscountController::class, 'index']); // لیست تخفیف‌های فعال
+Route::get('/products/{productId}/discounts', [DiscountController::class, 'forProduct']); // تخفیف‌های مربوط به یک محصول
 
 use App\Models\User;
 

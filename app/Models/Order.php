@@ -13,6 +13,20 @@ class Order extends Model
         'user_id',
         'total_price',
         'status',
+        'discount_amount',
+        'coupon_id',
+        'subtotal',
+    ];
+    
+    /**
+     * The attributes that should be cast.
+     *
+     * @var array<string, string>
+     */
+    protected $casts = [
+        'total_price' => 'decimal:2',
+        'subtotal' => 'decimal:2',
+        'discount_amount' => 'decimal:2',
     ];
     
     /**
@@ -102,5 +116,21 @@ class Order extends Model
         }
         
         return $groupedItems;
+    }
+    
+    /**
+     * Get the coupon used for this order.
+     */
+    public function coupon()
+    {
+        return $this->belongsTo(Coupon::class);
+    }
+    
+    /**
+     * Get the coupon usage record for this order.
+     */
+    public function couponUsage()
+    {
+        return $this->hasOne(CouponUser::class);
     }
 }
