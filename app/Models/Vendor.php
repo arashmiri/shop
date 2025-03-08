@@ -29,5 +29,30 @@ class Vendor extends Model
     {
         return $this->hasMany(Product::class);
     }
-
+    
+    /**
+     * Get all order items associated with this vendor.
+     */
+    public function orderItems()
+    {
+        return $this->hasMany(OrderItem::class);
+    }
+    
+    /**
+     * Get all order statuses for this vendor.
+     */
+    public function orderStatuses()
+    {
+        return $this->hasMany(OrderVendorStatus::class);
+    }
+    
+    /**
+     * Get all orders associated with this vendor through order items.
+     */
+    public function orders()
+    {
+        return Order::whereHas('items', function ($query) {
+            $query->where('vendor_id', $this->id);
+        });
+    }
 }

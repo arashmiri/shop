@@ -67,5 +67,28 @@ class User extends Authenticatable
     {
         return $this->hasMany(Review::class);
     }
-
+    
+    /**
+     * Get the user's active cart.
+     */
+    public function cart()
+    {
+        return $this->hasOne(Cart::class)->latest();
+    }
+    
+    /**
+     * Get all carts for the user.
+     */
+    public function carts()
+    {
+        return $this->hasMany(Cart::class);
+    }
+    
+    /**
+     * Get all orders for the user.
+     */
+    public function orders()
+    {
+        return $this->hasMany(Order::class);
+    }
 }

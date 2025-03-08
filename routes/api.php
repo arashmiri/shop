@@ -4,8 +4,12 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Admin\VendorController;
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\CartController;
+use App\Http\Controllers\CheckoutController;
+use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProductController as PublicProductController;  // برای کنترلر عمومی محصولات
 use App\Http\Controllers\Vendor\ProductController as VendorProductController; // برای کنترلر فروشندگان
+use App\Http\Controllers\Vendor\OrderController as VendorOrderController; // برای کنترلر سفارشات فروشندگان
 use App\Http\Controllers\ReviewController;
 
 Route::prefix('auth')->group(function () {
@@ -28,12 +32,33 @@ Route::middleware(['auth:sanctum', 'role:vendor'])->group(function () {
     Route::get('/vendor/products', [VendorProductController::class, 'index']); // لیست محصولات
     Route::put('/vendor/products/{productId}', [VendorProductController::class, 'update']); // ویرایش محصول
     Route::delete('/vendor/products/{productId}', [VendorProductController::class, 'destroy']); // حذف محصول
+    
+    // Vendor order management routes
+    Route::get('/vendor/orders', [VendorOrderController::class, 'index']); // لیست سفارشات فروشنده
+    Route::get('/vendor/orders/{id}', [VendorOrderController::class, 'show']); // جزئیات سفارش فروشنده
+    Route::put('/vendor/orders/{id}/status', [VendorOrderController::class, 'updateStatus']); // بروزرسانی وضعیت سفارش
 });
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/products/{productId}/reviews', [ReviewController::class, 'store']); // ارسال نظر
     Route::get('/products/{productId}/reviews', [ReviewController::class, 'show']); // دریافت نظرات محصول
+    
+    // Order routes
+    Route::get('/orders', [OrderController::class, 'index']); // لیست سفارشات کاربر
+    Route::get('/orders/{id}', [OrderController::class, 'show']); // جزئیات سفارش
+    Route::post('/orders/{id}/cancel', [OrderController::class, 'cancel']); // لغو سفارش
+    
+    // Checkout routes
+    Route::get('/checkout', [CheckoutController::class, 'index']); // اطلاعات تسویه حساب
+    Route::post('/checkout', [CheckoutController::class, 'process']); // پردازش تسویه حساب
 });
+
+// Cart routes (available for both authenticated and guest users)
+Route::get('/cart', [CartController::class, 'index']); // دریافت سبد خرید
+Route::post('/cart/items', [CartController::class, 'addItem']); // افزودن محصول به سبد خرید
+Route::put('/cart/items/{id}', [CartController::class, 'updateItem']); // بروزرسانی تعداد محصول
+Route::delete('/cart/items/{id}', [CartController::class, 'removeItem']); // حذف محصول از سبد خرید
+Route::delete('/cart', [CartController::class, 'clearCart']); // خالی کردن سبد خرید
 
 Route::get('/products', [PublicProductController::class, 'index']);
 Route::get('/products/{id}', [PublicProductController::class, 'show']);
