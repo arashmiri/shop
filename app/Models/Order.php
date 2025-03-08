@@ -49,6 +49,30 @@ class Order extends Model
     }
     
     /**
+     * Get the payments for the order.
+     */
+    public function payments()
+    {
+        return $this->hasMany(Payment::class);
+    }
+    
+    /**
+     * Get the successful payment for the order.
+     */
+    public function successfulPayment()
+    {
+        return $this->payments()->where('status', 'successful')->latest()->first();
+    }
+    
+    /**
+     * Check if the order has been paid.
+     */
+    public function isPaid()
+    {
+        return $this->status === self::STATUS_PAID || $this->successfulPayment() !== null;
+    }
+    
+    /**
      * Get all vendors associated with this order.
      */
     public function vendors()

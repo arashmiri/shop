@@ -16,8 +16,9 @@ return new class extends Migration
             $table->unsignedBigInteger('order_id')->nullable();
             $table->unsignedBigInteger('user_id');
             $table->decimal('amount', 10, 2);
-            $table->enum('status', ['pending', 'successful', 'failed'])->default('pending');
-            $table->string('transaction_id')->unique();
+            $table->enum('status', ['pending', 'successful', 'failed', 'refunded'])->default('pending');
+            $table->string('transaction_id')->nullable(); // شناسه تراکنش از درگاه پرداخت
+            $table->string('reference_id')->nullable(); // شناسه مرجع برای پیگیری
             $table->string('gateway'); // نام درگاه پرداخت (مثلاً zarinpal, paypal)
             $table->timestamp('paid_at')->nullable(); // زمان نهایی شدن پرداخت
             $table->json('details')->nullable(); // ذخیره اطلاعات اضافی مثل شماره کارت و ref_id
@@ -25,6 +26,11 @@ return new class extends Migration
 
             $table->foreign('order_id')->references('id')->on('orders')->onDelete('set null');
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+            
+            // ایجاد ایندکس برای جستجوی سریع‌تر
+            $table->index(['transaction_id', 'reference_id']);
+            $table->index(['order_id', 'status']);
+            $table->index(['user_id', 'status']);
         });
     }
 

@@ -65,6 +65,273 @@
                         }
                     }
                 }
+            },
+            "Cart": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "user_id": {
+                        "type": "integer",
+                        "example": 3,
+                        "nullable": true
+                    },
+                    "session_id": {
+                        "type": "string",
+                        "example": "abc123xyz456",
+                        "nullable": true
+                    },
+                    "items": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/CartItem"
+                        }
+                    },
+                    "total": {
+                        "type": "number",
+                        "example": 750000
+                    },
+                    "items_by_vendor": {
+                        "type": "object",
+                        "additionalProperties": {
+                            "type": "object",
+                            "properties": {
+                                "vendor": {
+                                    "$ref": "#/components/schemas/Product/properties/vendor"
+                                },
+                                "items": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/CartItem"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "CartItem": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "cart_id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "product_id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "quantity": {
+                        "type": "integer",
+                        "example": 2
+                    },
+                    "product": {
+                        "$ref": "#/components/schemas/Product"
+                    }
+                }
+            },
+            "Order": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "user_id": {
+                        "type": "integer",
+                        "example": 3
+                    },
+                    "total_price": {
+                        "type": "number",
+                        "example": 750000
+                    },
+                    "status": {
+                        "type": "string",
+                        "example": "pending",
+                        "enum": ["pending", "processing", "shipped", "completed", "cancelled"]
+                    },
+                    "items": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/OrderItem"
+                        }
+                    },
+                    "vendor_statuses": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/OrderVendorStatus"
+                        }
+                    },
+                    "items_by_vendor": {
+                        "type": "object",
+                        "additionalProperties": {
+                            "type": "object",
+                            "properties": {
+                                "vendor": {
+                                    "$ref": "#/components/schemas/Product/properties/vendor"
+                                },
+                                "items": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/OrderItem"
+                                    }
+                                },
+                                "status": {
+                                    "type": "string",
+                                    "example": "pending"
+                                }
+                            }
+                        }
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2023-01-01T12:00:00Z"
+                    }
+                }
+            },
+            "OrderItem": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "order_id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "product_id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "vendor_id": {
+                        "type": "integer",
+                        "example": 2
+                    },
+                    "quantity": {
+                        "type": "integer",
+                        "example": 2
+                    },
+                    "price": {
+                        "type": "number",
+                        "example": 250000
+                    },
+                    "product": {
+                        "$ref": "#/components/schemas/Product"
+                    }
+                }
+            },
+            "OrderVendorStatus": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "order_id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "vendor_id": {
+                        "type": "integer",
+                        "example": 2
+                    },
+                    "status": {
+                        "type": "string",
+                        "example": "pending",
+                        "enum": ["pending", "processing", "shipped", "completed", "cancelled"]
+                    },
+                    "notes": {
+                        "type": "string",
+                        "example": "در حال آماده‌سازی محصول",
+                        "nullable": true
+                    },
+                    "vendor": {
+                        "$ref": "#/components/schemas/Product/properties/vendor"
+                    }
+                }
+            },
+            "Payment": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "order_id": {
+                        "type": "integer",
+                        "example": 1,
+                        "nullable": true
+                    },
+                    "user_id": {
+                        "type": "integer",
+                        "example": 3
+                    },
+                    "amount": {
+                        "type": "number",
+                        "example": 750000
+                    },
+                    "status": {
+                        "type": "string",
+                        "enum": ["pending", "successful", "failed", "refunded"],
+                        "example": "successful"
+                    },
+                    "transaction_id": {
+                        "type": "string",
+                        "example": "A11111111111111111111111111111111",
+                        "nullable": true
+                    },
+                    "reference_id": {
+                        "type": "string",
+                        "example": "a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6",
+                        "nullable": true
+                    },
+                    "gateway": {
+                        "type": "string",
+                        "example": "zarinpal"
+                    },
+                    "paid_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2023-01-01T12:00:00Z",
+                        "nullable": true
+                    },
+                    "details": {
+                        "type": "object",
+                        "nullable": true,
+                        "properties": {
+                            "authority": {
+                                "type": "string",
+                                "example": "A11111111111111111111111111111111"
+                            },
+                            "ref_id": {
+                                "type": "string",
+                                "example": "12345678"
+                            },
+                            "card_pan": {
+                                "type": "string",
+                                "example": "6037xxxx1234"
+                            }
+                        }
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2023-01-01T12:00:00Z"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2023-01-01T12:00:00Z"
+                    }
+                }
             }
         }
     },
@@ -97,6 +364,26 @@
         {
             "name": "Public Products",
             "description": "Endpoints for public access to products"
+        },
+        {
+            "name": "Cart",
+            "description": "Endpoints for managing shopping cart"
+        },
+        {
+            "name": "Checkout",
+            "description": "Endpoints for checkout process"
+        },
+        {
+            "name": "Orders",
+            "description": "Endpoints for managing user orders"
+        },
+        {
+            "name": "Vendor Orders",
+            "description": "Endpoints for vendors to manage their orders"
+        },
+        {
+            "name": "Payments",
+            "description": "Endpoints for managing payments"
         }
     ],
     "paths": {
@@ -841,6 +1128,1488 @@
                     },
                     "404": {
                         "description": "محصول یافت نشد"
+                    }
+                }
+            }
+        },
+        "/cart": {
+            "get": {
+                "summary": "مشاهده سبد خرید",
+                "description": "دریافت اطلاعات سبد خرید کاربر یا مهمان",
+                "tags": ["Cart"],
+                "responses": {
+                    "200": {
+                        "description": "اطلاعات سبد خرید",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object",
+                                            "properties": {
+                                                "cart": {
+                                                    "$ref": "#/components/schemas/Cart"
+                                                },
+                                                "total": {
+                                                    "type": "number",
+                                                    "example": 750000
+                                                },
+                                                "items_by_vendor": {
+                                                    "type": "object",
+                                                    "additionalProperties": {
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "vendor": {
+                                                                "$ref": "#/components/schemas/Product/properties/vendor"
+                                                            },
+                                                            "items": {
+                                                                "type": "array",
+                                                                "items": {
+                                                                    "$ref": "#/components/schemas/CartItem"
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "summary": "خالی کردن سبد خرید",
+                "description": "حذف تمام محصولات از سبد خرید",
+                "tags": ["Cart"],
+                "responses": {
+                    "200": {
+                        "description": "سبد خرید با موفقیت خالی شد",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "سبد خرید با موفقیت خالی شد"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/cart/items": {
+            "post": {
+                "summary": "افزودن محصول به سبد خرید",
+                "description": "افزودن یک محصول به سبد خرید کاربر یا مهمان",
+                "tags": ["Cart"],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "product_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "quantity": {
+                                        "type": "integer",
+                                        "example": 2,
+                                        "minimum": 1
+                                    }
+                                },
+                                "required": ["product_id", "quantity"]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "محصول با موفقیت به سبد خرید اضافه شد",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "محصول با موفقیت به سبد خرید اضافه شد"
+                                        },
+                                        "data": {
+                                            "$ref": "#/components/schemas/CartItem"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "خطا در افزودن محصول به سبد خرید",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "موجودی محصول کافی نیست"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "خطای اعتبارسنجی داده‌ها"
+                    }
+                }
+            }
+        },
+        "/cart/items/{id}": {
+            "put": {
+                "summary": "بروزرسانی تعداد محصول در سبد خرید",
+                "description": "تغییر تعداد یک محصول در سبد خرید",
+                "tags": ["Cart"],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "description": "شناسه آیتم سبد خرید",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "quantity": {
+                                        "type": "integer",
+                                        "example": 3,
+                                        "minimum": 1
+                                    }
+                                },
+                                "required": ["quantity"]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "تعداد محصول با موفقیت بروزرسانی شد",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "تعداد محصول با موفقیت بروزرسانی شد"
+                                        },
+                                        "data": {
+                                            "$ref": "#/components/schemas/CartItem"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "خطا در بروزرسانی تعداد محصول",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "موجودی محصول کافی نیست"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "آیتم سبد خرید یافت نشد"
+                    },
+                    "422": {
+                        "description": "خطای اعتبارسنجی داده‌ها"
+                    }
+                }
+            },
+            "delete": {
+                "summary": "حذف محصول از سبد خرید",
+                "description": "حذف یک محصول از سبد خرید",
+                "tags": ["Cart"],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "description": "شناسه آیتم سبد خرید",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "محصول با موفقیت از سبد خرید حذف شد",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "محصول با موفقیت از سبد خرید حذف شد"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "آیتم سبد خرید یافت نشد"
+                    }
+                }
+            }
+        },
+        "/checkout": {
+            "get": {
+                "summary": "مشاهده اطلاعات تسویه حساب",
+                "description": "دریافت اطلاعات سبد خرید برای تسویه حساب",
+                "tags": ["Checkout"],
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "اطلاعات تسویه حساب",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object",
+                                            "properties": {
+                                                "cart": {
+                                                    "$ref": "#/components/schemas/Cart"
+                                                },
+                                                "total": {
+                                                    "type": "number",
+                                                    "example": 750000
+                                                },
+                                                "items_by_vendor": {
+                                                    "type": "object",
+                                                    "additionalProperties": {
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "vendor": {
+                                                                "$ref": "#/components/schemas/Product/properties/vendor"
+                                                            },
+                                                            "items": {
+                                                                "type": "array",
+                                                                "items": {
+                                                                    "$ref": "#/components/schemas/CartItem"
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "سبد خرید خالی است",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "سبد خرید شما خالی است"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "نیاز به احراز هویت"
+                    }
+                }
+            },
+            "post": {
+                "summary": "ثبت سفارش",
+                "description": "تبدیل سبد خرید به سفارش",
+                "tags": ["Checkout"],
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "سفارش با موفقیت ثبت شد",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "سفارش شما با موفقیت ثبت شد"
+                                        },
+                                        "data": {
+                                            "type": "object",
+                                            "properties": {
+                                                "order": {
+                                                    "$ref": "#/components/schemas/Order"
+                                                },
+                                                "items_by_vendor": {
+                                                    "type": "object",
+                                                    "additionalProperties": {
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "vendor": {
+                                                                "$ref": "#/components/schemas/Product/properties/vendor"
+                                                            },
+                                                            "items": {
+                                                                "type": "array",
+                                                                "items": {
+                                                                    "$ref": "#/components/schemas/OrderItem"
+                                                                }
+                                                            },
+                                                            "status": {
+                                                                "type": "string",
+                                                                "example": "pending"
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "خطا در ثبت سفارش",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "سبد خرید شما خالی است"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "نیاز به احراز هویت"
+                    }
+                }
+            }
+        },
+        "/orders": {
+            "get": {
+                "summary": "مشاهده سفارشات کاربر",
+                "description": "دریافت لیست سفارشات کاربر",
+                "tags": ["Orders"],
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "لیست سفارشات",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/Order"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "نیاز به احراز هویت"
+                    }
+                }
+            }
+        },
+        "/orders/{id}": {
+            "get": {
+                "summary": "مشاهده جزئیات سفارش",
+                "description": "دریافت جزئیات یک سفارش خاص",
+                "tags": ["Orders"],
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "description": "شناسه سفارش",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "جزئیات سفارش",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object",
+                                            "properties": {
+                                                "order": {
+                                                    "$ref": "#/components/schemas/Order"
+                                                },
+                                                "items_by_vendor": {
+                                                    "type": "object",
+                                                    "additionalProperties": {
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "vendor": {
+                                                                "$ref": "#/components/schemas/Product/properties/vendor"
+                                                            },
+                                                            "items": {
+                                                                "type": "array",
+                                                                "items": {
+                                                                    "$ref": "#/components/schemas/OrderItem"
+                                                                }
+                                                            },
+                                                            "status": {
+                                                                "type": "string",
+                                                                "example": "pending"
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "نیاز به احراز هویت"
+                    },
+                    "404": {
+                        "description": "سفارش یافت نشد"
+                    }
+                }
+            }
+        },
+        "/orders/{id}/cancel": {
+            "post": {
+                "summary": "لغو سفارش",
+                "description": "لغو یک سفارش توسط کاربر",
+                "tags": ["Orders"],
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "description": "شناسه سفارش",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "سفارش با موفقیت لغو شد",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "سفارش با موفقیت لغو شد"
+                                        },
+                                        "data": {
+                                            "$ref": "#/components/schemas/Order"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "خطا در لغو سفارش",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "سفارشات تکمیل شده قابل لغو نیستند"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "نیاز به احراز هویت"
+                    },
+                    "404": {
+                        "description": "سفارش یافت نشد"
+                    }
+                }
+            }
+        },
+        "/vendor/orders": {
+            "get": {
+                "summary": "مشاهده سفارشات فروشنده",
+                "description": "دریافت لیست سفارشاتی که شامل محصولات فروشنده هستند",
+                "tags": ["Vendor Orders"],
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "لیست سفارشات",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "user_id": {
+                                                        "type": "integer",
+                                                        "example": 3
+                                                    },
+                                                    "total_price": {
+                                                        "type": "number",
+                                                        "example": 750000
+                                                    },
+                                                    "status": {
+                                                        "type": "string",
+                                                        "example": "pending"
+                                                    },
+                                                    "items": {
+                                                        "type": "array",
+                                                        "items": {
+                                                            "$ref": "#/components/schemas/OrderItem"
+                                                        },
+                                                        "description": "فقط آیتم‌های مربوط به این فروشنده"
+                                                    },
+                                                    "vendor_statuses": {
+                                                        "type": "array",
+                                                        "items": {
+                                                            "$ref": "#/components/schemas/OrderVendorStatus"
+                                                        },
+                                                        "description": "فقط وضعیت مربوط به این فروشنده"
+                                                    },
+                                                    "user": {
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "id": {
+                                                                "type": "integer",
+                                                                "example": 3
+                                                            },
+                                                            "phone": {
+                                                                "type": "string",
+                                                                "example": "09123456789"
+                                                            },
+                                                            "name": {
+                                                                "type": "string",
+                                                                "example": "کاربر تست"
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "نیاز به احراز هویت"
+                    },
+                    "403": {
+                        "description": "کاربر فروشنده نیست"
+                    }
+                }
+            }
+        },
+        "/vendor/orders/{id}": {
+            "get": {
+                "summary": "مشاهده جزئیات سفارش توسط فروشنده",
+                "description": "دریافت جزئیات یک سفارش خاص که شامل محصولات فروشنده است",
+                "tags": ["Vendor Orders"],
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "description": "شناسه سفارش",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "جزئیات سفارش",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object",
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "user_id": {
+                                                    "type": "integer",
+                                                    "example": 3
+                                                },
+                                                "total_price": {
+                                                    "type": "number",
+                                                    "example": 750000
+                                                },
+                                                "status": {
+                                                    "type": "string",
+                                                    "example": "pending"
+                                                },
+                                                "items": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "$ref": "#/components/schemas/OrderItem"
+                                                    },
+                                                    "description": "فقط آیتم‌های مربوط به این فروشنده"
+                                                },
+                                                "vendor_statuses": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "$ref": "#/components/schemas/OrderVendorStatus"
+                                                    },
+                                                    "description": "فقط وضعیت مربوط به این فروشنده"
+                                                },
+                                                "user": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "id": {
+                                                            "type": "integer",
+                                                            "example": 3
+                                                        },
+                                                        "phone": {
+                                                            "type": "string",
+                                                            "example": "09123456789"
+                                                        },
+                                                        "name": {
+                                                            "type": "string",
+                                                            "example": "کاربر تست"
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "نیاز به احراز هویت"
+                    },
+                    "403": {
+                        "description": "کاربر فروشنده نیست"
+                    },
+                    "404": {
+                        "description": "سفارش یافت نشد یا شامل محصولات این فروشنده نیست"
+                    }
+                }
+            }
+        },
+        "/vendor/orders/{id}/status": {
+            "put": {
+                "summary": "بروزرسانی وضعیت سفارش توسط فروشنده",
+                "description": "بروزرسانی وضعیت بخش مربوط به فروشنده در یک سفارش",
+                "tags": ["Vendor Orders"],
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "description": "شناسه سفارش",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "status": {
+                                        "type": "string",
+                                        "enum": ["pending", "processing", "shipped", "completed", "cancelled"],
+                                        "example": "processing"
+                                    },
+                                    "notes": {
+                                        "type": "string",
+                                        "example": "در حال آماده‌سازی محصول"
+                                    }
+                                },
+                                "required": ["status"]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "وضعیت سفارش با موفقیت بروزرسانی شد",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "وضعیت سفارش با موفقیت بروزرسانی شد"
+                                        },
+                                        "data": {
+                                            "$ref": "#/components/schemas/OrderVendorStatus"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "خطا در بروزرسانی وضعیت سفارش",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "وضعیت نامعتبر است"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "نیاز به احراز هویت"
+                    },
+                    "403": {
+                        "description": "کاربر فروشنده نیست"
+                    },
+                    "404": {
+                        "description": "سفارش یافت نشد یا شامل محصولات این فروشنده نیست"
+                    },
+                    "422": {
+                        "description": "خطای اعتبارسنجی داده‌ها"
+                    }
+                }
+            }
+        },
+        "/orders/{orderId}/payments": {
+            "post": {
+                "summary": "ایجاد پرداخت جدید",
+                "description": "ایجاد یک پرداخت جدید برای سفارش مشخص شده",
+                "tags": ["Payments"],
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "name": "orderId",
+                        "in": "path",
+                        "required": true,
+                        "description": "شناسه سفارش",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "gateway": {
+                                        "type": "string",
+                                        "enum": ["zarinpal", "payir", "idpay"],
+                                        "example": "zarinpal",
+                                        "description": "درگاه پرداخت"
+                                    }
+                                },
+                                "required": ["gateway"]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "اطلاعات پرداخت",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "در حال انتقال به درگاه پرداخت"
+                                        },
+                                        "data": {
+                                            "type": "object",
+                                            "properties": {
+                                                "payment_id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "reference_id": {
+                                                    "type": "string",
+                                                    "example": "a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6"
+                                                },
+                                                "amount": {
+                                                    "type": "number",
+                                                    "example": 750000
+                                                },
+                                                "payment_url": {
+                                                    "type": "string",
+                                                    "example": "http://shop.test/api/payments/callback/zarinpal?reference_id=a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6"
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "خطا در ایجاد پرداخت",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "این سفارش قبلاً پرداخت شده است"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "نیاز به احراز هویت"
+                    },
+                    "403": {
+                        "description": "عدم دسترسی به سفارش"
+                    },
+                    "404": {
+                        "description": "سفارش یافت نشد"
+                    },
+                    "422": {
+                        "description": "خطای اعتبارسنجی داده‌ها"
+                    }
+                }
+            }
+        },
+        "/payments": {
+            "get": {
+                "summary": "تاریخچه پرداخت‌ها",
+                "description": "دریافت لیست پرداخت‌های کاربر",
+                "tags": ["Payments"],
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "لیست پرداخت‌ها",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "order_id": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "user_id": {
+                                                        "type": "integer",
+                                                        "example": 3
+                                                    },
+                                                    "amount": {
+                                                        "type": "number",
+                                                        "example": 750000
+                                                    },
+                                                    "status": {
+                                                        "type": "string",
+                                                        "enum": ["pending", "successful", "failed", "refunded"],
+                                                        "example": "successful"
+                                                    },
+                                                    "gateway": {
+                                                        "type": "string",
+                                                        "example": "zarinpal"
+                                                    },
+                                                    "transaction_id": {
+                                                        "type": "string",
+                                                        "example": "A11111111111111111111111111111111"
+                                                    },
+                                                    "reference_id": {
+                                                        "type": "string",
+                                                        "example": "a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6"
+                                                    },
+                                                    "paid_at": {
+                                                        "type": "string",
+                                                        "format": "date-time",
+                                                        "example": "2023-01-01T12:00:00Z"
+                                                    },
+                                                    "order": {
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "id": {
+                                                                "type": "integer",
+                                                                "example": 1
+                                                            },
+                                                            "status": {
+                                                                "type": "string",
+                                                                "example": "paid"
+                                                            },
+                                                            "total_price": {
+                                                                "type": "number",
+                                                                "example": 750000
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "نیاز به احراز هویت"
+                    }
+                }
+            }
+        },
+        "/payments/{paymentId}": {
+            "get": {
+                "summary": "جزئیات پرداخت",
+                "description": "دریافت جزئیات یک پرداخت خاص",
+                "tags": ["Payments"],
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "name": "paymentId",
+                        "in": "path",
+                        "required": true,
+                        "description": "شناسه پرداخت",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "جزئیات پرداخت",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object",
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "order_id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "user_id": {
+                                                    "type": "integer",
+                                                    "example": 3
+                                                },
+                                                "amount": {
+                                                    "type": "number",
+                                                    "example": 750000
+                                                },
+                                                "status": {
+                                                    "type": "string",
+                                                    "enum": ["pending", "successful", "failed", "refunded"],
+                                                    "example": "successful"
+                                                },
+                                                "gateway": {
+                                                    "type": "string",
+                                                    "example": "zarinpal"
+                                                },
+                                                "transaction_id": {
+                                                    "type": "string",
+                                                    "example": "A11111111111111111111111111111111"
+                                                },
+                                                "reference_id": {
+                                                    "type": "string",
+                                                    "example": "a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6"
+                                                },
+                                                "paid_at": {
+                                                    "type": "string",
+                                                    "format": "date-time",
+                                                    "example": "2023-01-01T12:00:00Z"
+                                                },
+                                                "details": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "authority": {
+                                                            "type": "string",
+                                                            "example": "A11111111111111111111111111111111"
+                                                        },
+                                                        "ref_id": {
+                                                            "type": "string",
+                                                            "example": "12345678"
+                                                        },
+                                                        "card_pan": {
+                                                            "type": "string",
+                                                            "example": "6037xxxx1234"
+                                                        }
+                                                    }
+                                                },
+                                                "order": {
+                                                    "$ref": "#/components/schemas/Order"
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "نیاز به احراز هویت"
+                    },
+                    "403": {
+                        "description": "عدم دسترسی به پرداخت"
+                    },
+                    "404": {
+                        "description": "پرداخت یافت نشد"
+                    }
+                }
+            }
+        },
+        "/payments/callback/zarinpal": {
+            "get": {
+                "summary": "بازگشت از درگاه زرین‌پال",
+                "description": "پردازش بازگشت از درگاه پرداخت زرین‌پال",
+                "tags": ["Payments"],
+                "parameters": [
+                    {
+                        "name": "reference_id",
+                        "in": "query",
+                        "required": true,
+                        "description": "شناسه مرجع پرداخت",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "Authority",
+                        "in": "query",
+                        "required": true,
+                        "description": "شناسه تراکنش زرین‌پال",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "Status",
+                        "in": "query",
+                        "required": true,
+                        "description": "وضعیت پرداخت",
+                        "schema": {
+                            "type": "string",
+                            "enum": ["OK", "NOK"]
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "پرداخت موفق",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "پرداخت با موفقیت انجام شد"
+                                        },
+                                        "data": {
+                                            "type": "object",
+                                            "properties": {
+                                                "order_id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "payment_id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "transaction_id": {
+                                                    "type": "string",
+                                                    "example": "A11111111111111111111111111111111"
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "پرداخت ناموفق",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "پرداخت ناموفق بود"
+                                        },
+                                        "data": {
+                                            "type": "object",
+                                            "properties": {
+                                                "order_id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "payment_id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "پرداخت یافت نشد"
+                    }
+                }
+            }
+        },
+        "/payments/callback/payir": {
+            "get": {
+                "summary": "بازگشت از درگاه Pay.ir",
+                "description": "پردازش بازگشت از درگاه پرداخت Pay.ir",
+                "tags": ["Payments"],
+                "parameters": [
+                    {
+                        "name": "reference_id",
+                        "in": "query",
+                        "required": true,
+                        "description": "شناسه مرجع پرداخت",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "status",
+                        "in": "query",
+                        "required": true,
+                        "description": "وضعیت پرداخت",
+                        "schema": {
+                            "type": "string",
+                            "enum": ["1", "0"]
+                        }
+                    },
+                    {
+                        "name": "transId",
+                        "in": "query",
+                        "required": false,
+                        "description": "شناسه تراکنش Pay.ir",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "پرداخت موفق",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "پرداخت با موفقیت انجام شد"
+                                        },
+                                        "data": {
+                                            "type": "object",
+                                            "properties": {
+                                                "order_id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "payment_id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "transaction_id": {
+                                                    "type": "string",
+                                                    "example": "12345678"
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "پرداخت ناموفق",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "پرداخت ناموفق بود"
+                                        },
+                                        "data": {
+                                            "type": "object",
+                                            "properties": {
+                                                "order_id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "payment_id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "پرداخت یافت نشد"
+                    }
+                }
+            }
+        },
+        "/payments/callback/idpay": {
+            "get": {
+                "summary": "بازگشت از درگاه IDPay",
+                "description": "پردازش بازگشت از درگاه پرداخت IDPay",
+                "tags": ["Payments"],
+                "parameters": [
+                    {
+                        "name": "reference_id",
+                        "in": "query",
+                        "required": true,
+                        "description": "شناسه مرجع پرداخت",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "status",
+                        "in": "query",
+                        "required": true,
+                        "description": "وضعیت پرداخت",
+                        "schema": {
+                            "type": "string",
+                            "enum": ["100", "101", "200", "201", "0", "1", "2", "3"]
+                        }
+                    },
+                    {
+                        "name": "track_id",
+                        "in": "query",
+                        "required": false,
+                        "description": "شناسه پیگیری IDPay",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "پرداخت موفق",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "پرداخت با موفقیت انجام شد"
+                                        },
+                                        "data": {
+                                            "type": "object",
+                                            "properties": {
+                                                "order_id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "payment_id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "transaction_id": {
+                                                    "type": "string",
+                                                    "example": "12345678"
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "پرداخت ناموفق",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "پرداخت ناموفق بود"
+                                        },
+                                        "data": {
+                                            "type": "object",
+                                            "properties": {
+                                                "order_id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "payment_id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "پرداخت یافت نشد"
                     }
                 }
             }

@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\OrderController;
+use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ProductController as PublicProductController;  // برای کنترلر عمومی محصولات
 use App\Http\Controllers\Vendor\ProductController as VendorProductController; // برای کنترلر فروشندگان
 use App\Http\Controllers\Vendor\OrderController as VendorOrderController; // برای کنترلر سفارشات فروشندگان
@@ -51,7 +52,17 @@ Route::middleware('auth:sanctum')->group(function () {
     // Checkout routes
     Route::get('/checkout', [CheckoutController::class, 'index']); // اطلاعات تسویه حساب
     Route::post('/checkout', [CheckoutController::class, 'process']); // پردازش تسویه حساب
+    
+    // Payment routes
+    Route::post('/orders/{orderId}/payments', [PaymentController::class, 'create']); // ایجاد پرداخت جدید
+    Route::get('/payments', [PaymentController::class, 'history']); // تاریخچه پرداخت‌ها
+    Route::get('/payments/{paymentId}', [PaymentController::class, 'show']); // جزئیات پرداخت
 });
+
+// Payment callback routes (public)
+Route::get('/payments/callback/zarinpal', [PaymentController::class, 'callbackZarinpal']);
+Route::get('/payments/callback/payir', [PaymentController::class, 'callbackPayir']);
+Route::get('/payments/callback/idpay', [PaymentController::class, 'callbackIdpay']);
 
 // Cart routes (available for both authenticated and guest users)
 Route::get('/cart', [CartController::class, 'index']); // دریافت سبد خرید
