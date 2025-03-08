@@ -4,9 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Models\Order;
 use App\Models\Payment;
+use App\Services\Payment\PaymentGatewayFactory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
+use InvalidArgumentException;
 
 class PaymentController extends Controller
 {
@@ -39,7 +41,7 @@ class PaymentController extends Controller
         
         // اعتبارسنجی درگاه پرداخت
         $request->validate([
-            'gateway' => 'required|string|in:zarinpal,payir,idpay',
+            'gateway' => 'required|string|in:' . implode(',', PaymentGatewayFactory::getSupportedGateways()),
         ]);
         
         // ایجاد رکورد پرداخت
@@ -54,83 +56,19 @@ class PaymentController extends Controller
         
         $payment->save();
         
-        // بر اساس درگاه پرداخت، پردازش مناسب را انجام دهید
-        switch ($request->gateway) {
-            case 'zarinpal':
-                return $this->processZarinpalPayment($payment);
-            case 'payir':
-                return $this->processPayirPayment($payment);
-            case 'idpay':
-                return $this->processIdpayPayment($payment);
-            default:
-                return response()->json([
-                    'message' => 'درگاه پرداخت نامعتبر است'
-                ], 400);
+        try {
+            // ایجاد نمونه درگاه پرداخت با استفاده از Factory
+            $gateway = PaymentGatewayFactory::create($request->gateway);
+            
+            // پردازش پرداخت با استفاده از درگاه
+            $result = $gateway->processPayment($payment);
+            
+            return response()->json($result);
+        } catch (InvalidArgumentException $e) {
+            return response()->json([
+                'message' => $e->getMessage()
+            ], 400);
         }
-    }
-    
-    /**
-     * پردازش پرداخت با درگاه زرین‌پال
-     */
-    private function processZarinpalPayment(Payment $payment)
-    {
-        // در اینجا کد اتصال به API زرین‌پال قرار می‌گیرد
-        // این یک نمونه ساده است و در محیط واقعی باید با API زرین‌پال ارتباط برقرار کنید
-        
-        // شبیه‌سازی ارتباط با زرین‌پال
-        $paymentUrl = url("/payments/callback/zarinpal?reference_id={$payment->reference_id}");
-        
-        return response()->json([
-            'message' => 'در حال انتقال به درگاه پرداخت',
-            'data' => [
-                'payment_id' => $payment->id,
-                'reference_id' => $payment->reference_id,
-                'amount' => $payment->amount,
-                'payment_url' => $paymentUrl,
-            ]
-        ]);
-    }
-    
-    /**
-     * پردازش پرداخت با درگاه Pay.ir
-     */
-    private function processPayirPayment(Payment $payment)
-    {
-        // در اینجا کد اتصال به API Pay.ir قرار می‌گیرد
-        
-        // شبیه‌سازی ارتباط با Pay.ir
-        $paymentUrl = url("/payments/callback/payir?reference_id={$payment->reference_id}");
-        
-        return response()->json([
-            'message' => 'در حال انتقال به درگاه پرداخت',
-            'data' => [
-                'payment_id' => $payment->id,
-                'reference_id' => $payment->reference_id,
-                'amount' => $payment->amount,
-                'payment_url' => $paymentUrl,
-            ]
-        ]);
-    }
-    
-    /**
-     * پردازش پرداخت با درگاه IDPay
-     */
-    private function processIdpayPayment(Payment $payment)
-    {
-        // در اینجا کد اتصال به API IDPay قرار می‌گیرد
-        
-        // شبیه‌سازی ارتباط با IDPay
-        $paymentUrl = url("/payments/callback/idpay?reference_id={$payment->reference_id}");
-        
-        return response()->json([
-            'message' => 'در حال انتقال به درگاه پرداخت',
-            'data' => [
-                'payment_id' => $payment->id,
-                'reference_id' => $payment->reference_id,
-                'amount' => $payment->amount,
-                'payment_url' => $paymentUrl,
-            ]
-        ]);
     }
     
     /**
@@ -138,56 +76,18 @@ class PaymentController extends Controller
      */
     public function callbackZarinpal(Request $request)
     {
-        // بررسی و اعتبارسنجی پارامترهای بازگشتی از زرین‌پال
-        $referenceId = $request->reference_id;
-        $authority = $request->Authority;
-        $status = $request->Status;
-        
-        // یافتن پرداخت بر اساس شناسه مرجع
-        $payment = Payment::where('reference_id', $referenceId)
-            ->where('status', Payment::STATUS_PENDING)
-            ->first();
-            
-        if (!$payment) {
-            return response()->json([
-                'message' => 'پرداخت یافت نشد یا قبلاً پردازش شده است'
-            ], 404);
-        }
-        
-        // بررسی وضعیت پرداخت
-        if ($status === 'OK') {
-            // در اینجا باید تأیید پرداخت از زرین‌پال را انجام دهید
-            // این یک شبیه‌سازی است
-            
-            // ثبت اطلاعات تراکنش
-            $payment->markAsSuccessful($authority, [
-                'authority' => $authority,
-                'ref_id' => Str::random(8), // در واقعیت از زرین‌پال دریافت می‌شود
-                'card_pan' => '6037xxxxxxxx' . rand(1000, 9999),
-            ]);
+        try {
+            $gateway = PaymentGatewayFactory::create('zarinpal');
+            $result = $gateway->processCallback($request->all());
             
             return response()->json([
-                'message' => 'پرداخت با موفقیت انجام شد',
-                'data' => [
-                    'order_id' => $payment->order_id,
-                    'payment_id' => $payment->id,
-                    'transaction_id' => $payment->transaction_id,
-                ]
-            ]);
-        } else {
-            // ثبت شکست پرداخت
-            $payment->markAsFailed([
-                'authority' => $authority,
-                'error' => 'پرداخت توسط کاربر لغو شد یا با خطا مواجه شد'
-            ]);
-            
+                'message' => $result['message'],
+                'data' => $result['data'] ?? []
+            ], $result['status_code'] ?? ($result['success'] ? 200 : 400));
+        } catch (\Exception $e) {
             return response()->json([
-                'message' => 'پرداخت ناموفق بود',
-                'data' => [
-                    'order_id' => $payment->order_id,
-                    'payment_id' => $payment->id,
-                ]
-            ], 400);
+                'message' => 'خطا در پردازش بازگشت از درگاه پرداخت: ' . $e->getMessage()
+            ], 500);
         }
     }
     
@@ -196,48 +96,18 @@ class PaymentController extends Controller
      */
     public function callbackPayir(Request $request)
     {
-        // مشابه callbackZarinpal با تغییرات مناسب برای Pay.ir
-        $referenceId = $request->reference_id;
-        $status = $request->status;
-        $transId = $request->transId;
-        
-        $payment = Payment::where('reference_id', $referenceId)
-            ->where('status', Payment::STATUS_PENDING)
-            ->first();
-            
-        if (!$payment) {
-            return response()->json([
-                'message' => 'پرداخت یافت نشد یا قبلاً پردازش شده است'
-            ], 404);
-        }
-        
-        if ($status == 1) {
-            $payment->markAsSuccessful($transId, [
-                'trans_id' => $transId,
-                'card_number' => '6037xxxxxxxx' . rand(1000, 9999),
-            ]);
+        try {
+            $gateway = PaymentGatewayFactory::create('payir');
+            $result = $gateway->processCallback($request->all());
             
             return response()->json([
-                'message' => 'پرداخت با موفقیت انجام شد',
-                'data' => [
-                    'order_id' => $payment->order_id,
-                    'payment_id' => $payment->id,
-                    'transaction_id' => $payment->transaction_id,
-                ]
-            ]);
-        } else {
-            $payment->markAsFailed([
-                'error' => 'پرداخت ناموفق بود',
-                'trans_id' => $transId,
-            ]);
-            
+                'message' => $result['message'],
+                'data' => $result['data'] ?? []
+            ], $result['status_code'] ?? ($result['success'] ? 200 : 400));
+        } catch (\Exception $e) {
             return response()->json([
-                'message' => 'پرداخت ناموفق بود',
-                'data' => [
-                    'order_id' => $payment->order_id,
-                    'payment_id' => $payment->id,
-                ]
-            ], 400);
+                'message' => 'خطا در پردازش بازگشت از درگاه پرداخت: ' . $e->getMessage()
+            ], 500);
         }
     }
     
@@ -246,49 +116,18 @@ class PaymentController extends Controller
      */
     public function callbackIdpay(Request $request)
     {
-        // مشابه callbackZarinpal با تغییرات مناسب برای IDPay
-        $referenceId = $request->reference_id;
-        $status = $request->status;
-        $trackId = $request->track_id;
-        
-        $payment = Payment::where('reference_id', $referenceId)
-            ->where('status', Payment::STATUS_PENDING)
-            ->first();
-            
-        if (!$payment) {
-            return response()->json([
-                'message' => 'پرداخت یافت نشد یا قبلاً پردازش شده است'
-            ], 404);
-        }
-        
-        if ($status == 100) {
-            $payment->markAsSuccessful($trackId, [
-                'track_id' => $trackId,
-                'card_no' => '6037xxxxxxxx' . rand(1000, 9999),
-            ]);
+        try {
+            $gateway = PaymentGatewayFactory::create('idpay');
+            $result = $gateway->processCallback($request->all());
             
             return response()->json([
-                'message' => 'پرداخت با موفقیت انجام شد',
-                'data' => [
-                    'order_id' => $payment->order_id,
-                    'payment_id' => $payment->id,
-                    'transaction_id' => $payment->transaction_id,
-                ]
-            ]);
-        } else {
-            $payment->markAsFailed([
-                'error' => 'پرداخت ناموفق بود',
-                'track_id' => $trackId,
-                'status' => $status,
-            ]);
-            
+                'message' => $result['message'],
+                'data' => $result['data'] ?? []
+            ], $result['status_code'] ?? ($result['success'] ? 200 : 400));
+        } catch (\Exception $e) {
             return response()->json([
-                'message' => 'پرداخت ناموفق بود',
-                'data' => [
-                    'order_id' => $payment->order_id,
-                    'payment_id' => $payment->id,
-                ]
-            ], 400);
+                'message' => 'خطا در پردازش بازگشت از درگاه پرداخت: ' . $e->getMessage()
+            ], 500);
         }
     }
     
